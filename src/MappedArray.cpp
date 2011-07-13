@@ -1,0 +1,78 @@
+#include <fcntl.h>
+#include <io.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#include <unicode/ustream.h>
+
+#include <MappedArray.hpp>
+
+#include <Windows.h>
+
+ENTER_NAMESPACE_STOKES
+
+Integer32U MappedArray::sCacheSize = 0;
+
+Integer32U MappedArray::GetCacheSize()
+{
+	return sCacheSize;
+}
+
+void MappedArray::SetCacheLength(const Integer32U cacheSize)
+{
+	sCacheSize = cacheSize;
+}
+
+MappedArray::MappedArray(const std::wstring& mappedFileName, const DataType dataType, const Integer64U length) :
+	LinearArray(dataType, length),
+	mMappedFileName(mappedFileName),
+	mMappedFile(-1)
+{
+	Resize(dataType, length);
+}
+
+MappedArray::~MappedArray()
+{
+	HANDLE hFileMapping = OpenFileMappingW(FILE_MAP_ALL_ACCESS, FALSE, mMappedFileName.c_str());
+	if (hFileMapping != INVALID_HANDLE_VALUE)
+	{
+		if (CloseHandle(hFileMapping) == TRUE)
+		{
+			_close(mMappedFile);
+		}
+	}
+}
+
+const std::wstring& MappedArray::GetMappedFileName() const
+{
+	return mMappedFileName;
+}
+
+Integer64U MappedArray::Resize(const DataType dataType, const Integer64U length)
+{
+	errno_t failed = _wsopen_s(&mMappedFile, mMappedFileName.c_str(), _O_BINARY|_O_CREAT|_O_EXCL|_O_RDWR, _SH_DENYNO, _S_IREAD|_S_IWRITE);
+	if (failed == 0)
+	{
+		assert(mMappedFile != -1); 
+
+		HANDLE hMappedFile = reinterpret_cast<HANDLE>(_get_osfhandle(mMappedFile));
+		assert(hMappedFile != INVALID_HANDLE_VALUE);
+
+		LARGE_INTEGER fileSize;
+		fileSize.QuadPart = GetDataTypeSize(dataType) * length;
+
+		if (::SetFilePointerEx(hMappedFile, fileSize, NULL, FILE_BEGIN))
+		{
+			::SetEndOfFile(hMappedFile);
+
+			HANDLE hFileMapping = ::CreateFileMappingW(hMappedFile, NULL, PAGE_READWRITE, fileSize.HighPart, fileSize.LowPart, mMappedFileName.c_str());
+			assert(hFileMapping != INVALID_HANDLE_VALUE);
+		}
+
+		return fileSize.QuadPart;
+	}
+
+	return 0;
+}
+
+LEAVE_NAMESPACE_STOKES
