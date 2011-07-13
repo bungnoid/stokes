@@ -23,9 +23,9 @@ void MappedArray::SetCacheLength(const Integer32U cacheSize)
 	sCacheSize = cacheSize;
 }
 
-MappedArray::MappedArray(const std::wstring& mappedFileName, const DataType dataType, const Integer64U length) :
+MappedArray::MappedArray(const std::wstring& pathToMappedFile, const DataType dataType, const Integer64U length) :
 	LinearArray(dataType, length),
-	mMappedFileName(mappedFileName),
+	mPathToMappedFile(pathToMappedFile),
 	mMappedFile(-1)
 {
 	Resize(dataType, length);
@@ -33,7 +33,7 @@ MappedArray::MappedArray(const std::wstring& mappedFileName, const DataType data
 
 MappedArray::~MappedArray()
 {
-	HANDLE hFileMapping = OpenFileMappingW(FILE_MAP_ALL_ACCESS, FALSE, mMappedFileName.c_str());
+	HANDLE hFileMapping = OpenFileMappingW(FILE_MAP_ALL_ACCESS, FALSE, mPathToMappedFile.c_str());
 	if (hFileMapping != INVALID_HANDLE_VALUE)
 	{
 		if (CloseHandle(hFileMapping) == TRUE)
@@ -43,14 +43,14 @@ MappedArray::~MappedArray()
 	}
 }
 
-const std::wstring& MappedArray::GetMappedFileName() const
+const std::wstring& MappedArray::GetPathToMappedFile() const
 {
-	return mMappedFileName;
+	return mPathToMappedFile;
 }
 
 Integer64U MappedArray::Resize(const DataType dataType, const Integer64U length)
 {
-	errno_t failed = _wsopen_s(&mMappedFile, mMappedFileName.c_str(), _O_BINARY|_O_CREAT|_O_EXCL|_O_RDWR, _SH_DENYNO, _S_IREAD|_S_IWRITE);
+	errno_t failed = _wsopen_s(&mMappedFile, mPathToMappedFile.c_str(), _O_BINARY|_O_CREAT|_O_EXCL|_O_RDWR, _SH_DENYNO, _S_IREAD|_S_IWRITE);
 	if (failed == 0)
 	{
 		assert(mMappedFile != -1); 
@@ -65,7 +65,7 @@ Integer64U MappedArray::Resize(const DataType dataType, const Integer64U length)
 		{
 			::SetEndOfFile(hMappedFile);
 
-			HANDLE hFileMapping = ::CreateFileMappingW(hMappedFile, NULL, PAGE_READWRITE, fileSize.HighPart, fileSize.LowPart, mMappedFileName.c_str());
+			HANDLE hFileMapping = ::CreateFileMappingW(hMappedFile, NULL, PAGE_READWRITE, fileSize.HighPart, fileSize.LowPart, mPathToMappedFile.c_str());
 			assert(hFileMapping != INVALID_HANDLE_VALUE);
 		}
 
@@ -73,6 +73,26 @@ Integer64U MappedArray::Resize(const DataType dataType, const Integer64U length)
 	}
 
 	return 0;
+}
+
+void MappedArray::PreAccess(const Integer64U index)
+{
+	void* cache = LinearArray::Access(0);
+
+	HANDLE hFileMapping = OpenFileMappingW(FILE_MAP_ALL_ACCESS, FALSE, mPathToMappedFile.c_str());
+	MapViewOfFileEx(hFileMapping, FILE_MAP_ALL_ACCESS, 0, GetCacheSize(), GetDataTypeSize(mDataType) * index, cache);
+}
+
+void* MappedArray::Access(const Integer64U index)
+{
+	return LinearArray::Access(index);
+}
+
+void MappedArray::PostAccess(const Integer64U index)
+{
+	void* cache = LinearArray::Access(0);
+
+	UnmapViewOfFile(cache);
 }
 
 LEAVE_NAMESPACE_STOKES

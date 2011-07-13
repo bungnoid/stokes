@@ -13,9 +13,9 @@ LinearArray::~LinearArray()
 {
 }
 
-Integer64U LinearArray::Resize(const DataType type, const Integer64U length)
+Integer64U LinearArray::Resize(const DataType mDataType, const Integer64U length)
 {
-	Integer64U totalSize = GetDataTypeSize(type) * length;
+	Integer64U totalSize = GetDataTypeSize(mDataType) * length;
 	assert(totalSize != 0);
 
 	mAddress = malloc(totalSize);
@@ -23,9 +23,18 @@ Integer64U LinearArray::Resize(const DataType type, const Integer64U length)
 	return totalSize;
 }
 
-void* LinearArray::GetAddress()
+void LinearArray::PreAccess(const Integer64U index)
 {
-	return mAddress;
+}
+
+void* LinearArray::Access(const Integer64U index)
+{
+	Integer64U offset = GetDataTypeSize(mDataType) * index;
+	return reinterpret_cast<char*>(mAddress) + offset;
+}
+
+void LinearArray::PostAccess(const Integer64U index)
+{
 }
 
 LEAVE_NAMESPACE_STOKES

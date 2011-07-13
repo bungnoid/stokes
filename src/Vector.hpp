@@ -17,6 +17,13 @@ struct Vector
 		w(theW)
 	{
 	}
+	Vector(const Vector& copy)
+	{
+		x = copy.x;
+		y = copy.y;
+		z = copy.z;
+		w = copy.w;
+	}
 
 	union
 	{

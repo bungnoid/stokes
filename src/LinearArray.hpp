@@ -14,7 +14,9 @@ public:
 
 	virtual Integer64U Resize(const DataType type, const Integer64U length);
 
-	void* GetAddress();
+	virtual void PreAccess(const Integer64U index);
+	virtual void* Access(const Integer64U index);
+	virtual void PostAccess(const Integer64U index);
 
 protected:
 

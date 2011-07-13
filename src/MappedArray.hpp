@@ -20,16 +20,20 @@ private:
 
 public:
 
-	MappedArray(const std::wstring& mappedFileName, const DataType dataType, const Integer64U length);
+	MappedArray(const std::wstring& pathToMappedFile, const DataType dataType, const Integer64U length);
 	virtual ~MappedArray();
 
-	const std::wstring& GetMappedFileName() const;
+	const std::wstring& GetPathToMappedFile() const;
 
 	Integer64U Resize(const DataType dataType, const Integer64U length);
 
+	virtual void PreAccess(const Integer64U index);
+	virtual void* Access(const Integer64U index);
+	virtual void PostAccess(const Integer64U index);
+
 private:
 
-	std::wstring mMappedFileName;
+	std::wstring mPathToMappedFile;
 	int mMappedFile;
 };
 

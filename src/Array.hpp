@@ -21,6 +21,10 @@ public:
 
 	virtual Integer64U Resize(const DataType dataType, const Integer64U length) = 0;
 
+	virtual void PreAccess(const Integer64U index) = 0;
+	virtual void* Access(const Integer64U index) = 0;
+	virtual void PostAccess(const Integer64U index) = 0;
+
 protected:
 
 	DataType mDataType;
