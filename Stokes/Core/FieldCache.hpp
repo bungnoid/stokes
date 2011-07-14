@@ -15,13 +15,21 @@ public:
 
 	static Integer32U GetSystemPageSize();
 
+	static void SetLimitedSize(const Integer32U limitedSize);
+
 public:
 
-	FieldCache(const Integer32U size);
+	FieldCache(const FieldRef& field, const Integer32U limitedSize = 0);
 	virtual ~FieldCache();
 
-	virtual Integer32U PreFetchBlock(const FieldRef& field, const Vectoriu& blockStartIndex, const Vectoriu& blockEndIndex);
-	virtual Integer32U PreFetchSlice(const FieldRef& field, const Integer32U sliceStartIndex, const Integer32U sliceEndIndex);
+	virtual void* PreFetchBlock(const WideString& attributeName, const Vectoriu& blockStartIndex, const Vectoriu& blockEndIndex);
+	virtual void* PreFetchSlice(const WideString& attributeName, const Integer32U sliceStartIndex, const Integer32U sliceEndIndex);
+
+	virtual void Flush(void* address);
+
+private:
+
+	static Integer32U sLimitedSize;
 
 private:
 
@@ -38,6 +46,11 @@ private:
 		Integer32U length;
 		void*      address;
 	};
+
+private:
+
+	FieldRef                       mField;
+
 	std::map<Integer64U, Segement> mSegements;
 };
 

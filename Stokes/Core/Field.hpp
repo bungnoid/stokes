@@ -33,7 +33,9 @@ public:
 
 	static const WideString& GetStorageModeAsString(const StorageMode storageMode);
 
-	static const WideString& GetSemanticType(const SemanticType semanticType);
+	static const WideString& GetSemanticTypeAsString(const SemanticType semanticType);
+
+	static Integer32U GetSemanticTypeArity(const SemanticType semanticType);
 
 public:
 
@@ -42,8 +44,13 @@ public:
 	virtual ~Field();
 
 	StorageMode GetStorageMode() const;
+
+	const Vectoriu& GetTotalDim() const;
+	const Vectoriu& GetBlockDim() const;
+	const Vectoriu& GetTrueDim() const;
 	
 	void BindAttribute(const WideString& name, const SemanticType type, const ArrayRef& array);
+	bool QueryAttribute(const WideString& name, SemanticType& rType, ArrayRef& rArray);
 	void UnBindAttribute(const WideString& name);
 
 protected:
@@ -54,6 +61,7 @@ protected:
 
 	Vectoriu                           mTotalDim;
 	Vectoriu                           mBlockDim;
+	Vectoriu                           mTrueDim;
 
 	std::map<WideString, SemanticType> mAttributeTypes;
 	std::map<WideString, ArrayRef>     mAttributeArrays;

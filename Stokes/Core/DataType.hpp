@@ -32,6 +32,20 @@ enum DataType
 	DATATYPE_DOUBLE,
 };
 
+union Address
+{
+	Integer32  *asInteger32;
+	Integer32U *asInteger32U;
+
+	Integer64  *asInteger64;
+	Integer64U *asInteger64U;
+
+	Float      *asFloat;
+	Double     *asDouble;
+
+	void       *asRaw;
+};
+
 STOKES_API Integer32U GetDataTypeSize(const DataType dataType);
 
 LEAVE_NAMESPACE_STOKES
