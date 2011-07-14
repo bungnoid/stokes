@@ -8,8 +8,6 @@ Array::Array(const DataType dataType, const Integer64U length) :
 	mDataType(dataType),
 	mLength(length)
 {
-	assert(dataType != DATATYPE_NONE);
-	assert(length != 0);
 }
 
 Array::~Array()

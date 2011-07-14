@@ -9,20 +9,8 @@
 
 ENTER_NAMESPACE_STOKES
 
-Integer32U MappedArray::sCacheSize = 0;
-
-Integer32U MappedArray::GetCacheSize()
-{
-	return sCacheSize;
-}
-
-void MappedArray::SetCacheLength(const Integer32U cacheSize)
-{
-	sCacheSize = cacheSize;
-}
-
 MappedArray::MappedArray(const WideString& pathToMappedFile, const DataType dataType, const Integer64U length) :
-	LinearArray(dataType, length),
+	LinearArray(dataType),
 	mPathToMappedFile(pathToMappedFile),
 	mMappedFile(-1)
 {
@@ -65,32 +53,35 @@ Integer64U MappedArray::Resize(const DataType dataType, const Integer64U length)
 
 			HANDLE hFileMapping = ::CreateFileMappingW(hMappedFile, NULL, PAGE_READWRITE, fileSize.HighPart, fileSize.LowPart, mPathToMappedFile.c_str());
 			assert(hFileMapping != INVALID_HANDLE_VALUE);
-		}
 
-		return fileSize.QuadPart;
+			mDataType = dataType;
+			mLength = length;
+
+			return fileSize.QuadPart;
+		}
 	}
 
 	return 0;
 }
 
-void MappedArray::PreAccess(const Integer64U index)
+void MappedArray::PreAccess(const Integer64U offset, const Integer32U length)
 {
-	void* cache = LinearArray::Access(0);
+	LinearArray::Resize(mDataType, length);
+}
+
+void* MappedArray::Access(const Integer64U offset, const Integer32U length)
+{
+	ULARGE_INTEGER offsetInFile;
+	offsetInFile.QuadPart = offset;
 
 	HANDLE hFileMapping = OpenFileMappingW(FILE_MAP_ALL_ACCESS, FALSE, mPathToMappedFile.c_str());
-	MapViewOfFileEx(hFileMapping, FILE_MAP_ALL_ACCESS, 0, GetCacheSize(), GetDataTypeSize(mDataType) * index, cache);
+	MapViewOfFileEx(hFileMapping, FILE_MAP_ALL_ACCESS, offsetInFile.HighPart, offsetInFile.LowPart, GetDataTypeSize(mDataType) * length, LinearArray::Access(0));
+	return LinearArray::Access(0);
 }
 
-void* MappedArray::Access(const Integer64U index)
+void MappedArray::PostAccess(const Integer64U offset, const Integer32U length)
 {
-	return LinearArray::Access(index);
-}
-
-void MappedArray::PostAccess(const Integer64U index)
-{
-	void* cache = LinearArray::Access(0);
-
-	UnmapViewOfFile(cache);
+	UnmapViewOfFile(LinearArray::Access(0));
 }
 
 LEAVE_NAMESPACE_STOKES

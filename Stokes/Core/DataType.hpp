@@ -21,8 +21,6 @@ typedef std::wstring       WideString;
 
 enum DataType
 {
-	DATATYPE_NONE = 0,
-
 	DATATYPE_INTEGER32,
 	DATATYPE_INTEGER32U,
 	

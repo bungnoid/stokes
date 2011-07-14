@@ -2,8 +2,16 @@
 
 ENTER_NAMESPACE_STOKES
 
+Field::Field(const WideString& name, const Vectoriu& totalDim) :
+	mName(name),
+	mStorageMode(STORAGE_SLICE),
+	mTotalDim(totalDim)
+{
+}
+
 Field::Field(const WideString& name, const Vectoriu& totalDim, const Vectoriu& blockDim) :
 	mName(name),
+	mStorageMode(STORAGE_BLOCK),
 	mTotalDim(totalDim),
 	mBlockDim(blockDim)
 {
@@ -13,27 +21,16 @@ Field::~Field()
 {
 }
 
-void Field::AddAttribute(const WideString& attributeName, const AttributeType attributeType, const ArrayRef array)
+void Field::BindAttribute(const WideString& attributeName, const SemanticType attributeType, const ArrayRef& array)
 {
 	mAttributeTypes.insert(std::make_pair(attributeName, attributeType));
 	mAttributeArrays.insert(std::make_pair(attributeName, array));
 }
 
-bool Field::GetAttribute(const WideString& attributeName, AttributeType& attributeType, ArrayRef& array)
+void Field::UnBindAttribute(const WideString& name)
 {
-	std::map<WideString, AttributeType>::iterator atItr = mAttributeTypes.find(attributeName);
-	if (atItr != mAttributeTypes.end())
-	{
-		std::map<WideString, ArrayRef>::iterator aaItr = mAttributeArrays.find(attributeName);
-		assert(aaItr != mAttributeArrays.end());
-		
-		attributeType = atItr->second;
-		array = aaItr->second;
-		
-		return true;
-	}
-	
-	return false;
+	mAttributeTypes.erase(name);
+	mAttributeArrays.erase(name);
 }
 
 LEAVE_NAMESPACE_STOKES

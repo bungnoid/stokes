@@ -6,7 +6,6 @@
 #include <boost/shared_ptr.hpp>
 
 #include <Stokes/Core/Array.hpp>
-#include <Stokes/Core/Emitter.hpp>
 #include <Stokes/Core/Matrix.hpp>
 #include <Stokes/Core/Vector.hpp>
 
@@ -21,40 +20,43 @@ public:
 		STORAGE_SLICE,
 	};
 
-	enum AttributeType
+	enum SemanticType
 	{
-		ATTRIBUTE_HALF,
-		ATTRIBUTE_HALF2,
-		ATTRIBUTE_HALF3,
-		ATTRIBUTE_HALF4,
-	
-		ATTRIBUTE_FLOAT,
-		ATTRIBUTE_FLOAT2,
-		ATTRIBUTE_FLOAT3,
-		ATTRIBUTE_FLOAT4,
-		
-		ATTRIBUTE_DOUBLE,
-		ATTRIBUTE_DOUBLE2,
-		ATTRIBUTE_DOUBLE3,
-		ATTRIBUTE_DOUBLE4,
+		SEMANTIC_AGE,
+		SEMANTIC_COLOR,
+		SEMANTIC_DENSITY,
+		SEMANTIC_NORMAL,
+		SEMANTIC_OPACITY,
+		SEMANTIC_POSITION,
+		SEMANTIC_TEMPERATURE
 	};
 
-	Field(const WideString& fieldName, const Vectoriu& totalDim);
-	Field(const WideString& fieldName, const Vectoriu& totalDim, const Vectoriu& blockDim);
+	static const WideString& GetStorageModeAsString(const StorageMode storageMode);
+
+	static const WideString& GetSemanticType(const SemanticType semanticType);
+
+public:
+
+	Field(const WideString& name, const Vectoriu& totalDim);
+	Field(const WideString& name, const Vectoriu& totalDim, const Vectoriu& blockDim);
 	virtual ~Field();
+
+	StorageMode GetStorageMode() const;
 	
-	void AddAttribute(const WideString& attributeName, const AttributeType attributeType, const ArrayRef array);
-	bool GetAttribute(const WideString& attributeName, AttributeType& attributeType, ArrayRef& array);
+	void BindAttribute(const WideString& name, const SemanticType type, const ArrayRef& array);
+	void UnBindAttribute(const WideString& name);
 
 protected:
 
-	WideString                          mName;
+	WideString                         mName;
 
-	Vectoriu                            mTotalDim;
-	Vectoriu                            mBlockDim;
+	StorageMode                        mStorageMode;
 
-	std::map<WideString, AttributeType> mAttributeTypes;
-	std::map<WideString, ArrayRef>      mAttributeArrays;
+	Vectoriu                           mTotalDim;
+	Vectoriu                           mBlockDim;
+
+	std::map<WideString, SemanticType> mAttributeTypes;
+	std::map<WideString, ArrayRef>     mAttributeArrays;
 };
 
 typedef boost::shared_ptr<Field> FieldRef;

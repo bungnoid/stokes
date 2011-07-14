@@ -11,7 +11,12 @@ FieldCache::~FieldCache()
 {
 }
 
-Integer32U FieldCache::PreFetch(const FieldRef& field, const Vectoriu& minElementIndex, const Vectoriu& maxElementIndex)
+Integer32U FieldCache::PreFetchBlock(const FieldRef& field, const Vectoriu& blockStartIndex, const Vectoriu& blockEndIndex)
+{
+	return 0;
+}
+
+Integer32U FieldCache::PreFetchSlice(const FieldRef& field, const Integer32U sliceStartIndex, const Integer32U sliceEndIndex)
 {
 	return 0;
 }
