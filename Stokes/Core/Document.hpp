@@ -1,9 +1,7 @@
-#ifndef STOKES_DOCUMENT_HPP
-#define STOKES_DOCUMENT_HPP
+#ifndef DOCUMENT_HPP
+#define DOCUMENT_HPP
 
-#include <string>
-
-#include <API.hpp>
+#include <Stokes/Core/DataType.hpp>
 
 ENTER_NAMESPACE_STOKES
 
@@ -13,7 +11,7 @@ class STOKES_API Document
 {
 public:
 
-	Document(const std::wstring& fileName);
+	Document(const WideString& fileName);
 	~Document();
 
 	void Serialize(const Field& field);

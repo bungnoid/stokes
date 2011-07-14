@@ -1,4 +1,4 @@
-#include <Vector.hpp>
+#include <Stokes/Core/Vector.hpp>
 
 ENTER_NAMESPACE_STOKES
 

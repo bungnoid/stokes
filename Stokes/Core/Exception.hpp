@@ -1,9 +1,9 @@
-#ifndef STOKES_EXCEPTION_HPP
-#define STOKES_EXCEPTION_HPP
+#ifndef EXCEPTION_HPP
+#define EXCEPTION_HPP
 
 #include <exception>
 
-#include <API.hpp>
+#include <Stokes/Core/API.hpp>
 
 ENTER_NAMESPACE_STOKES
 

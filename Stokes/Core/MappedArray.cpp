@@ -3,9 +3,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include <unicode/ustream.h>
-
-#include <MappedArray.hpp>
+#include <Stokes/Core/MappedArray.hpp>
 
 #include <Windows.h>
 
@@ -23,7 +21,7 @@ void MappedArray::SetCacheLength(const Integer32U cacheSize)
 	sCacheSize = cacheSize;
 }
 
-MappedArray::MappedArray(const std::wstring& pathToMappedFile, const DataType dataType, const Integer64U length) :
+MappedArray::MappedArray(const WideString& pathToMappedFile, const DataType dataType, const Integer64U length) :
 	LinearArray(dataType, length),
 	mPathToMappedFile(pathToMappedFile),
 	mMappedFile(-1)
@@ -43,7 +41,7 @@ MappedArray::~MappedArray()
 	}
 }
 
-const std::wstring& MappedArray::GetPathToMappedFile() const
+const WideString& MappedArray::GetPathToMappedFile() const
 {
 	return mPathToMappedFile;
 }

@@ -1,9 +1,9 @@
-#ifndef STOKES_BOUND_HPP
-#define STOKES_BOUND_HPP
+#ifndef BOUND_HPP
+#define BOUND_HPP
 
 #include <cfloat>
 
-#include <Vector.hpp>
+#include <Stokes/Core/Vector.hpp>
 
 ENTER_NAMESPACE_STOKES
 

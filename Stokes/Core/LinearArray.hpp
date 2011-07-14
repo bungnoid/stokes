@@ -1,7 +1,7 @@
-#ifndef STOKES_LINEARARRAY_HPP
-#define STOKES_LINEARARRAY_HPP
+#ifndef LINEARARRAY_HPP
+#define LINEARARRAY_HPP
 
-#include <Array.hpp>
+#include <Stokes/Core/Array.hpp>
 
 ENTER_NAMESPACE_STOKES
 

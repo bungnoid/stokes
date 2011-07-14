@@ -1,9 +1,9 @@
-#ifndef STOKES_VECTOR_HPP
-#define STOKES_VECTOR_HPP
+#ifndef VECTOR_HPP
+#define VECTOR_HPP
 
 #include <iostream>
 
-#include <DataType.hpp>
+#include <Stokes/Core/DataType.hpp>
 
 ENTER_NAMESPACE_STOKES
 

@@ -1,9 +1,9 @@
-#ifndef STOKES_MAPPEDARRAY_HPP
-#define STOKES_MAPPEDARRAY_HPP
+#ifndef MAPPEDARRAY_HPP
+#define MAPPEDARRAY_HPP
 
 #include <string>
 
-#include <LinearArray.hpp>
+#include <Stokes/Core/LinearArray.hpp>
 
 ENTER_NAMESPACE_STOKES
 
@@ -20,10 +20,10 @@ private:
 
 public:
 
-	MappedArray(const std::wstring& pathToMappedFile, const DataType dataType, const Integer64U length);
+	MappedArray(const WideString& pathToMappedFile, const DataType dataType, const Integer64U length);
 	virtual ~MappedArray();
 
-	const std::wstring& GetPathToMappedFile() const;
+	const WideString& GetPathToMappedFile() const;
 
 	Integer64U Resize(const DataType dataType, const Integer64U length);
 
@@ -33,7 +33,7 @@ public:
 
 private:
 
-	std::wstring mPathToMappedFile;
+	WideString mPathToMappedFile;
 	int mMappedFile;
 };
 

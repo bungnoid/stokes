@@ -1,10 +1,9 @@
-#ifndef STOKES_ARRAY_HPP
-#define STOKES_ARRAY_HPP
+#ifndef ARRAY_HPP
+#define ARRAY_HPP
 
-#include <cassert>
+#include <boost/shared_ptr.hpp>
 
-#include <API.hpp>
-#include <DataType.hpp>
+#include <Stokes/Core/DataType.hpp>
 
 ENTER_NAMESPACE_STOKES
 
@@ -31,6 +30,8 @@ protected:
 
 	Integer64U mLength;
 };
+
+typedef boost::shared_ptr<Array> ArrayRef;
 
 LEAVE_NAMESPACE_STOKES
 

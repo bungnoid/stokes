@@ -3,8 +3,8 @@
 
 #include <iterator>
 
-#include <DataType.hpp>
-#include <Vector.hpp>
+#include <Stokes/Core/DataType.hpp>
+#include <Stokes/Core/Vector.hpp>
 
 ENTER_NAMESPACE_STOKES
 

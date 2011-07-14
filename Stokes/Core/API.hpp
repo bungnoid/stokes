@@ -1,5 +1,5 @@
-#ifndef STOKES_API_HPP
-#define STOKES_API_HPP
+#ifndef API_HPP
+#define API_HPP
 
 #ifdef _MSC_VER
 #define STOKES_PLATFORM_WINDOWS
