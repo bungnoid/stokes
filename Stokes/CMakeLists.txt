@@ -1,1 +1,1 @@
-include_directories(Core)
+add_subdirectory(Core)

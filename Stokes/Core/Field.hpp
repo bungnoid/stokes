@@ -3,6 +3,8 @@
 
 #include <map>
 
+#include <boost/shared_ptr.hpp>
+
 #include <Stokes/Core/Array.hpp>
 #include <Stokes/Core/Emitter.hpp>
 #include <Stokes/Core/Matrix.hpp>
@@ -41,8 +43,8 @@ public:
 	Field(const WideString& fieldName, const Vectoriu& totalDim, const Vectoriu& blockDim);
 	virtual ~Field();
 	
-	void AddAttribute(const WideString& attributeName, const ATTRIBUTE_SCALAR attributeType, const ArrayRef array);
-	bool GetAttribute(WideString& attributeName, AttributeType& attributeType, ArrayRef& array);
+	void AddAttribute(const WideString& attributeName, const AttributeType attributeType, const ArrayRef array);
+	bool GetAttribute(const WideString& attributeName, AttributeType& attributeType, ArrayRef& array);
 
 protected:
 
@@ -54,6 +56,8 @@ protected:
 	std::map<WideString, AttributeType> mAttributeTypes;
 	std::map<WideString, ArrayRef>      mAttributeArrays;
 };
+
+typedef boost::shared_ptr<Field> FieldRef;
 
 LEAVE_NAMESPACE_STOKES
 

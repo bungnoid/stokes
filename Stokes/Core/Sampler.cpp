@@ -2,7 +2,9 @@
 
 ENTER_NAMESPACE_STOKES
 
-Sampler::Sampler()
+Sampler::Sampler(const FieldRef& field, const AddressingMode addressingMode) :
+	mField(field),
+	mAddressingMode(addressingMode)
 {
 }
 

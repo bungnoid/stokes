@@ -18,12 +18,7 @@ public:
 	FieldCache(const Integer32U size);
 	virtual ~FieldCache();
 
-	virtual Integer32U PreFetch(const Field& field, const Vectoriu& minElementIndex, const Vectorui& maxElementIndex);
-
-private:
-
-	void**     mAddressesPerThread;
-	Integer32U mSize;
+	virtual Integer32U PreFetch(const FieldRef& field, const Vectoriu& minElementIndex, const Vectoriu& maxElementIndex);
 };
 
 LEAVE_NAMESPACE_STOKES

@@ -1,6 +1,6 @@
 #include <cassert>
 
-#include <Array.hpp>
+#include <Stokes/Core/Array.hpp>
 
 ENTER_NAMESPACE_STOKES
 
@@ -8,7 +8,7 @@ Array::Array(const DataType dataType, const Integer64U length) :
 	mDataType(dataType),
 	mLength(length)
 {
-	assert(dataType != STOKES_DATATYPE_NONE);
+	assert(dataType != DATATYPE_NONE);
 	assert(length != 0);
 }
 

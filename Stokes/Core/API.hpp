@@ -20,7 +20,7 @@
 #endif
 
 #ifdef _WIN32
-#ifdef STOKES_BUILD
+#ifdef STOKES_BUILDING
 #define STOKES_API __declspec(dllexport)
 #else
 #define STOKES_API __declspec(dllimport)

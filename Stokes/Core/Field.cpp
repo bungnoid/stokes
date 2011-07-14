@@ -13,7 +13,7 @@ Field::~Field()
 {
 }
 
-void Field::AddAttribute(const WideString& attributeName, const ATTRIBUTE_SCALAR attributeType, const ArrayRef array)
+void Field::AddAttribute(const WideString& attributeName, const AttributeType attributeType, const ArrayRef array)
 {
 	mAttributeTypes.insert(std::make_pair(attributeName, attributeType));
 	mAttributeArrays.insert(std::make_pair(attributeName, array));
@@ -35,7 +35,5 @@ bool Field::GetAttribute(const WideString& attributeName, AttributeType& attribu
 	
 	return false;
 }
-
-void Fill(const Emitter& emitter);
 
 LEAVE_NAMESPACE_STOKES

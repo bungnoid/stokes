@@ -2,6 +2,7 @@
 #define SAMPLER_HPP
 
 #include <Stokes/Core/Field.hpp>
+#include <Stokes/Core/FieldCache.hpp>
 
 ENTER_NAMESPACE_STOKES
 
@@ -17,16 +18,16 @@ public:
 		ADDRESSSING_MODE_REPEAT,
 	};
 
-	Sampler();
+	Sampler(const FieldRef& field, const AddressingMode addressingMode);
 	virtual ~Sampler();
 
-	virtual void SampleSlice(const FieldRef& field, const SamplerAddressingMode addressingMode, const WideString& attributeName, const Interger32U sliceIndex) = 0;
-	virtual void SampleBlock(const FieldRef& field, const SamplerAddressingMode addressingMode, const WideString& attributeName, const Vectorui& blockIndex) = 0;
+	virtual void SampleSlice(const WideString& attributeName, const Integer32U sliceIndex, FieldCache& fieldCache) = 0;
+	virtual void SampleBlock(const WideString& attributeName, const Vectoriu& blockIndex, FieldCache& fieldCache) = 0;
 	
 protected:
 
 	FieldRef mField;
-	
+	AddressingMode mAddressingMode;
 };
 
 LEAVE_NAMESPACE_STOKES

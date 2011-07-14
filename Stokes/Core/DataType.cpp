@@ -6,17 +6,17 @@ Integer32U GetDataTypeSize(const DataType dataType)
 {
 	switch(dataType)
 	{
-		case STOKES_DATATYPE_HALF:
+		case DATATYPE_HALF:
 			return 2;
 
-		case STOKES_DATATYPE_INTEGER32:
-		case STOKES_DATATYPE_INTEGER32U:
-		case STOKES_DATATYPE_REAL:
+		case DATATYPE_INTEGER32:
+		case DATATYPE_INTEGER32U:
+		case DATATYPE_REAL:
 			return 4;
 
-		case STOKES_DATATYPE_INTEGER64:
-		case STOKES_DATATYPE_INTEGER64U:
-		case STOKES_DATATYPE_DOUBLE:
+		case DATATYPE_INTEGER64:
+		case DATATYPE_INTEGER64U:
+		case DATATYPE_DOUBLE:
 			return 8;
 	}
 
