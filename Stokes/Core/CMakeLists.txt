@@ -8,3 +8,5 @@ add_library(StokesCore SHARED ${STOKES_CORE_HEADER_FILES} ${STOKES_CORE_SOURCE_F
 if(MSVC)
 	set_target_properties(StokesCore PROPERTIES IMPORT_PREFIX "lib" PREFIX "lib")
 endif()
+
+add_subdirectory(UnitTests)

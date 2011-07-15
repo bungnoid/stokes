@@ -5,40 +5,46 @@
 ENTER_NAMESPACE_STOKES
 
 LinearArray::LinearArray(const DataType dataType, const Integer64U length) :
-	Array(dataType, length)
+	Array(dataType, length),
+	mAddress(NULL)
 {
-	Resize(dataType, length);
+	Resize(length);
 }
 
 LinearArray::~LinearArray()
 {
 }
 
-Integer64U LinearArray::Resize(const DataType dataType, const Integer64U length)
+Integer64U LinearArray::Resize(const Integer64U length)
 {
-	Integer64U oldSize = GetDataTypeSize(mDataType) * mLength;
-	Integer64U newSize = GetDataTypeSize(dataType) * length;
+	Integer32U dataTypeSize = GetDataTypeSize(mDataType);
+	Integer64U oldSize = dataTypeSize * mLength;
+	Integer64U newSize = dataTypeSize * length;
 
-	if ((newSize > 0) && (newSize != oldSize))
+	if (newSize != oldSize)
 	{
-		free(mAddress);
-		mAddress = NULL;
-		mAddress = malloc(newSize);
 		if (mAddress)
 		{
-			mDataType = dataType;
-			mLength = length;
-
-			return newSize;
+			free(mAddress);
+			mAddress = NULL;
 		}
+
+		if (newSize > 0)
+		{
+			free(mAddress);
+			mAddress = NULL;
+			mAddress = malloc(newSize);
+			if (mAddress)
+			{
+				mLength = length;
+
+				return newSize;
+			}
+		}
+
 	}
 
 	return oldSize;
-}
-
-void LinearArray::PreAccess(const Integer64U offset, const Integer32U length)
-{
-	assert(offset + length <= mLength);
 }
 
 void* LinearArray::Access(const Integer64U offset, const Integer32U length)
@@ -49,9 +55,9 @@ void* LinearArray::Access(const Integer64U offset, const Integer32U length)
 	return reinterpret_cast<char*>(mAddress) + offsetInBytes;
 }
 
-void LinearArray::PostAccess(const Integer64U offset, const Integer32U length)
+void LinearArray::Flush(void* address)
 {
-	assert(offset + length <= mLength);
+	assert(address >= mAddress);
 }
 
 LEAVE_NAMESPACE_STOKES

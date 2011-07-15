@@ -28,23 +28,32 @@ enum DataType
 	DATATYPE_INTEGER64U,
 
 	DATATYPE_HALF,
-	DATATYPE_REAL,
+	DATATYPE_FLOAT,
 	DATATYPE_DOUBLE,
 };
 
-union Address
+struct Address
 {
-	Integer32  *asInteger32;
-	Integer32U *asInteger32U;
+	Address(void* raw = NULL) :
+		theRaw(raw)
+	{
+	}
 
-	Integer64  *asInteger64;
-	Integer64U *asInteger64U;
+	union
+	{
+		Integer32  *theInteger32;
+		Integer32U *theInteger32U;
 
-	Float      *asFloat;
-	Double     *asDouble;
+		Integer64  *theInteger64;
+		Integer64U *theInteger64U;
 
-	void       *asRaw;
+		Float      *theFloat;
+		Double     *theDouble;
+
+		void       *theRaw;
+	};
 };
+
 
 STOKES_API Integer32U GetDataTypeSize(const DataType dataType);
 

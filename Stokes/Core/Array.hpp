@@ -18,11 +18,15 @@ public:
 
 	Integer64U GetLength() const;
 
-	virtual Integer64U Resize(const DataType dataType, const Integer64U length) = 0;
+	Integer64U GetSize() const;
 
-	virtual void PreAccess(const Integer64U offset, const Integer32U length = 0) = 0;
-	virtual void* Access(const Integer64U offset, const Integer32U length = 0) = 0;
-	virtual void PostAccess(const Integer64U offset, const Integer32U length = 0) = 0;
+	/**
+	 * @param length Re-allocate the array, if length = 0, clear all. 
+	 */
+	virtual Integer64U Resize(const Integer64U length) = 0;
+
+	virtual void* Access(const Integer64U offset, const Integer32U length) = 0;
+	virtual void Flush(void* address) = 0;
 
 protected:
 

@@ -48,23 +48,26 @@ public:
 	const Vectoriu& GetTotalDim() const;
 	const Vectoriu& GetBlockDim() const;
 	const Vectoriu& GetTrueDim() const;
-	
-	void BindAttribute(const WideString& name, const SemanticType type, const ArrayRef& array);
-	bool QueryAttribute(const WideString& name, SemanticType& rType, ArrayRef& rArray);
-	void UnBindAttribute(const WideString& name);
+
+	Integer64U CalculateOffsetByBlockIndex(const Vectoriu& blockIndex);
+
+	void Bind(const SemanticType semanticType, const WideString& semanticName, const ArrayRef& semanticArray);
+	bool Query(const SemanticType semanticType);
+	bool GetBinding(const SemanticType semanticType, WideString& rSemanticName, ArrayRef& rSemanticArray);
+	void UnBind(const SemanticType semanticType);
 
 protected:
 
-	WideString                         mName;
+	WideString                              mName;
 
-	StorageMode                        mStorageMode;
+	StorageMode                             mStorageMode;
 
-	Vectoriu                           mTotalDim;
-	Vectoriu                           mBlockDim;
-	Vectoriu                           mTrueDim;
+	Vectoriu                                mTotalDim;
+	Vectoriu                                mBlockDim;
+	Vectoriu                                mTrueDim;
 
-	std::map<WideString, SemanticType> mAttributeTypes;
-	std::map<WideString, ArrayRef>     mAttributeArrays;
+	typedef std::pair<WideString, ArrayRef> NamedArrayRef;
+	std::map<SemanticType, NamedArrayRef>   mBindings;
 };
 
 typedef boost::shared_ptr<Field> FieldRef;

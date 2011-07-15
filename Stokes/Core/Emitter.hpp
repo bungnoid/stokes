@@ -12,7 +12,8 @@ public:
 	Emitter();
 	virtual ~Emitter();
 
-	virtual void Fill(const FieldRef& field) = 0;
+	virtual bool Check(const FieldRef& field) const = 0;
+	virtual void Fill(const FieldRef& field) const = 0;
 };
 
 LEAVE_NAMESPACE_STOKES

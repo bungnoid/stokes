@@ -7,26 +7,38 @@
 
 ENTER_NAMESPACE_STOKES
 
-class STOKES_API MappedArray : public LinearArray
+class STOKES_API MappedArray : public Array
 {
 public:
 
-	MappedArray(const WideString& pathToMappedFile, const DataType dataType, const Integer64U length);
+	enum MappingMode
+	{
+		MAPPING_MODE_READ_ONLY,
+		MAPPING_MODE_READ_WRITE
+	};
+
+	MappedArray(const DataType dataType, const MappingMode mappingMode);
 	virtual ~MappedArray();
 
+	/**
+	 * Open an exsit file to read or create a new file.
+	 */
+	bool OpenMappedFile(const WideString& pathToMappedFile);
 	const WideString& GetPathToMappedFile() const;
+	MappingMode GetMappingMode() const;
 
-	Integer64U Resize(const DataType dataType, const Integer64U length);
+	virtual Integer64U Resize(const Integer64U length);
 
-	virtual void PreAccess(const Integer64U offset, const Integer32U length = 0);
-	virtual void* Access(const Integer64U offset, const Integer32U length = 0);
-	virtual void PostAccess(const Integer64U offset, const Integer32U length = 0);
+	virtual void* Access(const Integer64U offset, const Integer32U length);
+	virtual void Flush(void* address);
 
 private:
 
-	int mMappedFile;
-
 	WideString mPathToMappedFile;
+
+	MappingMode mMappingMode;
+
+	int mMappedFile;
 };
 
 LEAVE_NAMESPACE_STOKES

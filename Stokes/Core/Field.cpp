@@ -60,21 +60,23 @@ const Vectoriu& Field::GetTrueDim() const
 	return mTrueDim;
 }
 
-void Field::BindAttribute(const WideString& attributeName, const SemanticType attributeType, const ArrayRef& array)
+void Field::Bind(const SemanticType semanticType, const WideString& semanticName, const ArrayRef& semanticArray)
 {
-	mAttributeTypes.insert(std::make_pair(attributeName, attributeType));
-	mAttributeArrays.insert(std::make_pair(attributeName, array));
+	mBindings.insert(std::make_pair(semanticType, std::make_pair(semanticName, semanticArray)));
 }
 
-bool Field::QueryAttribute(const WideString& name, SemanticType& rType, ArrayRef& rArray)
+bool Field::Query(const SemanticType semanticType)
 {
-	std::map<WideString, SemanticType>::iterator stItr = mAttributeTypes.find(name);
-	if (stItr != mAttributeTypes.end())
-	{
-		std::map<WideString, ArrayRef>::iterator aItr = mAttributeArrays.find(name);
+	return (mBindings.find(semanticType) != mBindings.end());
+}
 
-		rType = stItr->second;
-		rArray = aItr->second;
+bool Field::GetBinding(const SemanticType semanticType, WideString& rSemanticName, ArrayRef& rSemanticArray)
+{
+	std::map<SemanticType, NamedArrayRef>::iterator itr = mBindings.find(semanticType);
+	if (itr != mBindings.end())
+	{
+		rSemanticName = itr->second.first;
+		rSemanticArray = itr->second.second;
 
 		return true;
 	}
@@ -82,10 +84,9 @@ bool Field::QueryAttribute(const WideString& name, SemanticType& rType, ArrayRef
 	return false;
 }
 
-void Field::UnBindAttribute(const WideString& name)
+void Field::UnBind(const SemanticType semanticType)
 {
-	mAttributeTypes.erase(name);
-	mAttributeArrays.erase(name);
+	mBindings.erase(semanticType);
 }
 
 LEAVE_NAMESPACE_STOKES

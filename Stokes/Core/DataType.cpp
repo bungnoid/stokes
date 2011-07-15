@@ -11,7 +11,7 @@ Integer32U GetDataTypeSize(const DataType dataType)
 
 		case DATATYPE_INTEGER32:
 		case DATATYPE_INTEGER32U:
-		case DATATYPE_REAL:
+		case DATATYPE_FLOAT:
 			return 4;
 
 		case DATATYPE_INTEGER64:

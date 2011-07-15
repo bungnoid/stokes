@@ -24,4 +24,9 @@ Integer64U Array::GetLength() const
 	return mLength;
 }
 
+Integer64U Array::GetSize() const
+{
+	return GetDataTypeSize(mDataType) * mLength;
+}
+
 LEAVE_NAMESPACE_STOKES
