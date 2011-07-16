@@ -37,13 +37,18 @@ Field::Field(const WideString& name, const Bound& bound, const Vectoriu& globalD
 	mBlockDim(blockDim),
 	mStorageMode(STORAGE_BLOCK)
 {
-	mGlobalDim.x = mGlobalDim.x / mBlockDim.x * mBlockDim.x;
-	mGlobalDim.y = mGlobalDim.y / mBlockDim.y * mBlockDim.y;
-	mGlobalDim.z = mGlobalDim.z / mBlockDim.z * mBlockDim.z;
+	mGlobalDim.x = (mGlobalDim.x & 1) ? (mGlobalDim.x + 1) / mBlockDim.x * mBlockDim.x : mGlobalDim.x;
+	mGlobalDim.y = (mGlobalDim.y & 1) ? (mGlobalDim.y + 1) / mBlockDim.y * mBlockDim.y : mGlobalDim.y;
+	mGlobalDim.z = (mGlobalDim.z & 1) ? (mGlobalDim.z + 1) / mBlockDim.z * mBlockDim.z : mGlobalDim.z;
 }
 
 Field::~Field()
 {
+}
+
+const WideString& Field::GetName() const
+{
+	return mName;
 }
 
 Field::StorageMode Field::GetStorageMode() const

@@ -16,11 +16,22 @@ struct Vector
 		z(theZ)
 	{
 	}
-	Vector(const Vector& copy)
+	Vector(const Vector& right)
 	{
-		x = copy.x;
-		y = copy.y;
-		z = copy.z;
+		x = right.x;
+		y = right.y;
+		z = right.z;
+	}
+
+	friend bool operator==(const Vector& left, const Vector& right)
+	{
+		return ((left.x == right.x) && (left.y == right.y) && (left.z == right.z));
+	}
+
+	friend std::ostream& operator<<(std::ostream& os, const Vector& vector)
+	{
+		os << vector.x << ' ' << vector.y << ' ' << vector.z << ' ';
+		return os;
 	}
 
 	union
@@ -33,12 +44,6 @@ struct Vector
 		};
 		T xyz[3];
 	};
-
-	friend std::ostream& operator<<(std::ostream& os, const Vector& vector)
-	{
-		os << vector.x << ' ' << vector.y << ' ' << vector.z << ' ';
-		return os;
-	}
 };
 
 typedef Vector<Float>      Vectorf;

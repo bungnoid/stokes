@@ -10,9 +10,12 @@ ENTER_NAMESPACE_STOKES
 
 struct Bound
 {
-	Bound() :
-		min(  FLT_MAX,   FLT_MAX,   FLT_MAX),
-		max(- FLT_MAX, - FLT_MAX, - FLT_MAX)
+	Bound(
+		const Float minX =   FLT_MAX, const Float minY =   FLT_MAX, const Float minZ =   FLT_MAX,
+		const Float maxX = - FLT_MAX, const Float maxY = - FLT_MAX, const Float maxZ = - FLT_MAX
+		) :
+		min(minX, minY, minZ),
+		max(maxX, maxY, maxZ)
 	{
 	}
 

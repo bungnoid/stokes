@@ -45,6 +45,8 @@ public:
 	Field(const WideString& name, const Bound& bound, const Vectoriu& globalDim, const Vectoriu& blockDim);
 	virtual ~Field();
 
+	const WideString& GetName() const;
+
 	StorageMode GetStorageMode() const;
 
 	const Vectoriu& GetGlobalDim() const;
