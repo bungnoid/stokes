@@ -6,6 +6,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include <Stokes/Core/Array.hpp>
+#include <Stokes/Core/Bound.hpp>
 #include <Stokes/Core/Matrix.hpp>
 #include <Stokes/Core/Vector.hpp>
 
@@ -28,7 +29,8 @@ public:
 		SEMANTIC_NORMAL,
 		SEMANTIC_OPACITY,
 		SEMANTIC_POSITION,
-		SEMANTIC_TEMPERATURE
+		SEMANTIC_TEMPERATURE,
+		SEMANTIC_VELOCITY
 	};
 
 	static const WideString& GetStorageModeAsString(const StorageMode storageMode);
@@ -39,32 +41,35 @@ public:
 
 public:
 
-	Field(const WideString& name, const Vectoriu& totalDim);
-	Field(const WideString& name, const Vectoriu& totalDim, const Vectoriu& blockDim);
+	Field(const WideString& name, const Bound& bound, const Vectoriu& globalDim);
+	Field(const WideString& name, const Bound& bound, const Vectoriu& globalDim, const Vectoriu& blockDim);
 	virtual ~Field();
 
 	StorageMode GetStorageMode() const;
 
-	const Vectoriu& GetTotalDim() const;
+	const Vectoriu& GetGlobalDim() const;
 	const Vectoriu& GetBlockDim() const;
-	const Vectoriu& GetTrueDim() const;
 
-	Integer64U CalculateOffsetByBlockIndex(const Vectoriu& blockIndex);
+	/**
+	 * @param index Transform global index to the position in world whenever field is slice-based or field-based.g
+	 */
+	Vectorf ConvertGlobalIndexToWorldPosition(const Vectoriu& globalindex);
 
-	void Bind(const SemanticType semanticType, const WideString& semanticName, const ArrayRef& semanticArray);
+	void Bind(const SemanticType semanticType, const WideString& semanticAlias, const ArrayRef& semanticArray);
 	bool Query(const SemanticType semanticType);
-	bool GetBinding(const SemanticType semanticType, WideString& rSemanticName, ArrayRef& rSemanticArray);
+	bool GetBinding(const SemanticType semanticType, WideString& rSemanticAlias, ArrayRef& rSemanticArray);
 	void UnBind(const SemanticType semanticType);
 
 protected:
 
 	WideString                              mName;
 
-	StorageMode                             mStorageMode;
+	Bound                                   mBound;
 
-	Vectoriu                                mTotalDim;
+	Vectoriu                                mGlobalDim;
 	Vectoriu                                mBlockDim;
-	Vectoriu                                mTrueDim;
+
+	StorageMode                             mStorageMode;
 
 	typedef std::pair<WideString, ArrayRef> NamedArrayRef;
 	std::map<SemanticType, NamedArrayRef>   mBindings;

@@ -5,6 +5,9 @@
 
 ENTER_NAMESPACE_STOKES
 
+/**
+ * <B>WARNING</B> Size of a single LinearArray can't be larger than 1G in both x86 and x64.
+ */
 class STOKES_API LinearArray : public Array
 {
 public:

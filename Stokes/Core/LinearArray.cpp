@@ -38,6 +38,8 @@ Integer64U LinearArray::Resize(const Integer64U length)
 			{
 				mLength = length;
 
+				memset(mAddress, 0, newSize);
+
 				return newSize;
 			}
 		}

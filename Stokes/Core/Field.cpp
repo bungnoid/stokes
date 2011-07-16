@@ -15,25 +15,31 @@ Integer32U Field::GetSemanticTypeArity(const SemanticType semanticType)
 		case SEMANTIC_COLOR:
 		case SEMANTIC_NORMAL:
 		case SEMANTIC_POSITION:
+		case SEMANTIC_VELOCITY:
 			return 3;
 	}
 
 	return 0;
 }
 
-Field::Field(const WideString& name, const Vectoriu& totalDim) :
+Field::Field(const WideString& name, const Bound& bound, const Vectoriu& globalDim) :
 	mName(name),
-	mStorageMode(STORAGE_SLICE),
-	mTotalDim(totalDim)
+	mBound(bound),
+	mGlobalDim(globalDim),
+	mStorageMode(STORAGE_SLICE)
 {
 }
 
-Field::Field(const WideString& name, const Vectoriu& totalDim, const Vectoriu& blockDim) :
+Field::Field(const WideString& name, const Bound& bound, const Vectoriu& globalDim, const Vectoriu& blockDim) :
 	mName(name),
-	mStorageMode(STORAGE_BLOCK),
-	mTotalDim(totalDim),
-	mBlockDim(blockDim)
+	mBound(bound),
+	mGlobalDim(globalDim),
+	mBlockDim(blockDim),
+	mStorageMode(STORAGE_BLOCK)
 {
+	mGlobalDim.x = mGlobalDim.x / mBlockDim.x * mBlockDim.x;
+	mGlobalDim.y = mGlobalDim.y / mBlockDim.y * mBlockDim.y;
+	mGlobalDim.z = mGlobalDim.z / mBlockDim.z * mBlockDim.z;
 }
 
 Field::~Field()
@@ -45,9 +51,9 @@ Field::StorageMode Field::GetStorageMode() const
 	return mStorageMode;
 }
 
-const Vectoriu& Field::GetTotalDim() const
+const Vectoriu& Field::GetGlobalDim() const
 {
-	return mTotalDim;
+	return mGlobalDim;
 }
 
 const Vectoriu& Field::GetBlockDim() const
@@ -55,14 +61,17 @@ const Vectoriu& Field::GetBlockDim() const
 	return mBlockDim;
 }
 
-const Vectoriu& Field::GetTrueDim() const
+Vectorf Field::ConvertGlobalIndexToWorldPosition(const Vectoriu& globalIndex)
 {
-	return mTrueDim;
+	const Vectorf& fieldSize = mBound.Size();
+	const Vectorf voxelSize(fieldSize.x / mGlobalDim.x, fieldSize.y / mGlobalDim.y, fieldSize.z / mGlobalDim.z);
+	return Vectorf(voxelSize.x * (globalIndex.x + 0.5f), voxelSize.y * (globalIndex.y + 0.5f), voxelSize.z * (globalIndex.z + 0.5f));
 }
 
-void Field::Bind(const SemanticType semanticType, const WideString& semanticName, const ArrayRef& semanticArray)
+void Field::Bind(const SemanticType semanticType, const WideString& semanticAlias, const ArrayRef& semanticArray)
 {
-	mBindings.insert(std::make_pair(semanticType, std::make_pair(semanticName, semanticArray)));
+	assert(semanticArray->GetDataType() == DATA_TYPE_FLOAT);
+	mBindings.insert(std::make_pair(semanticType, std::make_pair(semanticAlias, semanticArray)));
 }
 
 bool Field::Query(const SemanticType semanticType)
@@ -70,12 +79,12 @@ bool Field::Query(const SemanticType semanticType)
 	return (mBindings.find(semanticType) != mBindings.end());
 }
 
-bool Field::GetBinding(const SemanticType semanticType, WideString& rSemanticName, ArrayRef& rSemanticArray)
+bool Field::GetBinding(const SemanticType semanticType, WideString& rSemanticAlias, ArrayRef& rSemanticArray)
 {
 	std::map<SemanticType, NamedArrayRef>::iterator itr = mBindings.find(semanticType);
 	if (itr != mBindings.end())
 	{
-		rSemanticName = itr->second.first;
+		rSemanticAlias = itr->second.first;
 		rSemanticArray = itr->second.second;
 
 		return true;

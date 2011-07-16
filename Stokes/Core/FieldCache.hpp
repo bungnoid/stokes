@@ -19,7 +19,7 @@ public:
 
 public:
 
-	FieldCache(const FieldRef& field, const Integer32U limitedSize = 0);
+	FieldCache(const FieldRef& field);
 	virtual ~FieldCache();
 
 	virtual void* PreFetchBlock(const WideString& attributeName, const Vectoriu& blockStartIndex, const Vectoriu& blockEndIndex);
@@ -51,7 +51,7 @@ private:
 
 	FieldRef                       mField;
 
-	std::map<Integer64U, Segement> mSegements;
+	std::map<void*, Segement> mSegements;
 };
 
 LEAVE_NAMESPACE_STOKES

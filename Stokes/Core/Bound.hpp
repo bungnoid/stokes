@@ -1,6 +1,7 @@
 #ifndef BOUND_HPP
 #define BOUND_HPP
 
+#include <cassert>
 #include <cfloat>
 
 #include <Stokes/Core/Vector.hpp>
@@ -24,6 +25,15 @@ struct Bound
 		max.x = std::min(max.x, position.x);
 		max.y = std::min(max.y, position.y);
 		max.z = std::min(max.z, position.z);
+	}
+
+	Vectorf Size() const
+	{
+		assert(min.x < max.x);
+		assert(min.y < max.y);
+		assert(min.z < max.z);
+
+		return Vectorf(max.x - min.x, max.y - min.y, max.z - min.z);
 	}
 
 	Vectorf min;

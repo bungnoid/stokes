@@ -16,6 +16,8 @@ typedef unsigned long long Integer64U;
 typedef float              Float;
 typedef double             Double;
 
+typedef char               Char;
+typedef wchar_t            WChar;
 typedef std::string        CharString;
 typedef std::wstring       WideString;
 
@@ -29,13 +31,12 @@ enum DataType
 
 	DATA_TYPE_HALF,
 	DATA_TYPE_FLOAT,
-	DATA_TYPE_DOUBLE,
 };
 
 struct Address
 {
-	Address(void* raw = NULL) :
-		theRaw(raw)
+	Address(const void* raw = NULL) :
+		theRaw(const_cast<void*>(raw))
 	{
 	}
 

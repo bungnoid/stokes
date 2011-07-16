@@ -24,7 +24,7 @@ Integer32U FieldCache::GetSystemPageSize()
 	return pageSize;
 }
 
-FieldCache::FieldCache(const FieldRef& field, const Integer32U limitedSize) :
+FieldCache::FieldCache(const FieldRef& field) :
 	mField(field)
 {
 }

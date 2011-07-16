@@ -1,8 +1,10 @@
+#include <fstream>
+
 #include <cxxtest/TestSuite.h>
 
 #include <Stokes/Core/MappedArray.hpp>
 
-class MappedArrayUnitTest : public CxxTest::TestSuite
+class UnitTestMappedArray : public CxxTest::TestSuite
 {
 public:
 	void setUp()
@@ -16,12 +18,9 @@ public:
 	{
 		const Stokes::WideString pathToMappedFile(L"testMappedArray.dat");
 		const Stokes::MappedArray::MappingMode mappingMode = Stokes::MappedArray::MAPPING_MODE_READ_WRITE;
-		const Stokes::DataType dataType = Stokes::DATATYPE_INTEGER32;
+		const Stokes::DataType dataType = Stokes::DATA_TYPE_INTEGER32;
 		const Stokes::Integer64U length = 2 * 2 * 2 * 2 * 2 * 2;
 		const Stokes::Integer64U size = Stokes::GetDataTypeSize(dataType) * length;
-
-		// Remove the test file if it exist.
-		 _wremove(pathToMappedFile.c_str());
 
 		// Create a 128 bytes file.
 		std::auto_ptr<Stokes::MappedArray> testMappedArray(new Stokes::MappedArray(dataType, mappingMode));
@@ -51,5 +50,25 @@ public:
 
 		// Delete the testMappedArray.
 		testMappedArray.reset();
+
+		// Readback the file, valid the data.
+		FILE* fp = _wfopen(pathToMappedFile.c_str(), L"rb");
+		TS_ASSERT(fp);
+
+		Stokes::Integer64U i = 0;
+		for (i = 0; i < halfLength; ++ i)
+		{
+			Stokes::Integer32 data = -1;
+			fread(&data, sizeof(Stokes::Integer32), 1, fp);
+			TS_ASSERT(data == 2);
+		}
+		for (i = halfLength; i < length; ++ i)
+		{
+			Stokes::Integer32 data = -1;
+			fread(&data, sizeof(Stokes::Integer32), 1, fp);
+			TS_ASSERT(data == 1);
+		}
+
+		fclose(fp);
 	}
 };
