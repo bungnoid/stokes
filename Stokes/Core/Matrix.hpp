@@ -8,10 +8,13 @@
 
 ENTER_NAMESPACE_STOKES
 
+/**
+ * Row-major 4x4 matrix.
+ */
 template<typename T>
 struct Matrix
 {
-	Matrix(const T* theData = NULL)
+	explicit Matrix(const T* theData = NULL)
 	{
 		if (theData)
 		{
@@ -30,6 +33,16 @@ struct Matrix
 
 	T data[16];
 };
+
+template<typename T>
+Vector<T> Transform(const Matrix<T>& matrix, const Vector<T>& vector)
+{
+	Vector<T> newVector;
+	newVector.x = matrix.data[0] * vector.x + matrix.data[1] * vector.y + matrix.data[2]  * vector.z + matrix.data[3];
+	newVector.y = matrix.data[4] * vector.x + matrix.data[5] * vector.y + matrix.data[6]  * vector.z + matrix.data[7];
+	newVector.z = matrix.data[8] * vector.x + matrix.data[9] * vector.y + matrix.data[10] * vector.z + matrix.data[11];
+	return newVector;
+}
 
 template<typename T>
 Matrix<T> Invert(const Matrix<T>& matrix)

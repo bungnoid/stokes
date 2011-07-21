@@ -10,12 +10,16 @@ ENTER_NAMESPACE_STOKES
 
 struct Bound
 {
-	Bound(
-		const Float minX =   FLT_MAX, const Float minY =   FLT_MAX, const Float minZ =   FLT_MAX,
-		const Float maxX = - FLT_MAX, const Float maxY = - FLT_MAX, const Float maxZ = - FLT_MAX
-		) :
+	Bound
+	(const Float minX =   FLT_MAX, const Float minY =   FLT_MAX, const Float minZ =   FLT_MAX,
+	 const Float maxX = - FLT_MAX, const Float maxY = - FLT_MAX, const Float maxZ = - FLT_MAX) :
 		min(minX, minY, minZ),
 		max(maxX, maxY, maxZ)
+	{
+	}
+	Bound(const Bound& copy) :
+		min(copy.min),
+		max(copy.max)
 	{
 	}
 
@@ -38,11 +42,24 @@ struct Bound
 
 		return Vectorf(max.x - min.x, max.y - min.y, max.z - min.z);
 	}
+	bool IsContained(const Vectorf& position) const
+	{
+		if ((position.x > min.x) && (position.x < max.x))
+		{
+			if ((position.y > min.y) && (position.y < max.y))
+			{
+				if ((position.z > min.z) && (position.z < max.z))
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 	Vectorf min;
 	Vectorf max;
 };
-
 
 LEAVE_NAMESPACE_STOKES
 

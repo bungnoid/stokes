@@ -2,6 +2,7 @@
 #define API_HPP
 
 #ifdef _MSC_VER
+#pragma warning(disable : 4251)
 #define STOKES_PLATFORM_WINDOWS
 #ifdef _M_X64
 #define STOKES_ARCH_X64

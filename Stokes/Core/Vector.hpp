@@ -23,14 +23,42 @@ struct Vector
 		z = right.z;
 	}
 
-	friend bool operator==(const Vector& left, const Vector& right)
+	friend void operator +=(Vector& left, const Vector& right)
+	{
+		left.x += right.x;
+		left.y += right.y;
+		left.z += right.z;
+	}
+
+	friend void operator -=(Vector& left, const Vector& right)
+	{
+		left.x -= right.x;
+		left.y -= right.y;
+		left.z -= right.z;
+	}
+
+	friend void operator *=(Vector& left, const Vector& right)
+	{
+		left.x *= right.x;
+		left.y *= right.y;
+		left.z *= right.z;
+	}
+
+	friend void operator /=(Vector& left, const Vector& right)
+	{
+		left.x /= right.x;
+		left.y /= right.y;
+		left.z /= right.z;
+	}
+
+	friend bool operator ==(const Vector& left, const Vector& right)
 	{
 		return ((left.x == right.x) && (left.y == right.y) && (left.z == right.z));
 	}
 
-	friend std::ostream& operator<<(std::ostream& os, const Vector& vector)
+	friend std::ostream& operator <<(std::ostream& os, const Vector& vector)
 	{
-		os << vector.x << ' ' << vector.y << ' ' << vector.z << ' ';
+		os << vector.x << ' ' << vector.y << ' ' << vector.z;
 		return os;
 	}
 
@@ -50,6 +78,8 @@ typedef Vector<Float>      Vectorf;
 typedef Vector<Double>     Vectord;
 typedef Vector<Integer32>  Vectori;
 typedef Vector<Integer32U> Vectoriu;
+typedef Vector<Integer64>  Vectori64;
+typedef Vector<Integer64U> Vectori64u;
 
 LEAVE_NAMESPACE_STOKES
 

@@ -1,106 +1,78 @@
+#include <cmath>
+
 #include <Stokes/Core/Field.hpp>
 
 ENTER_NAMESPACE_STOKES
 
-Integer32U Field::GetSemanticTypeArity(const SemanticType semanticType)
-{
-	switch(semanticType)
-	{
-		case SEMANTIC_AGE:
-		case SEMANTIC_DENSITY:
-		case SEMANTIC_OPACITY:
-		case SEMANTIC_TEMPERATURE:
-			return 1;
-
-		case SEMANTIC_COLOR:
-		case SEMANTIC_NORMAL:
-		case SEMANTIC_POSITION:
-		case SEMANTIC_VELOCITY:
-			return 3;
-	}
-
-	return 0;
-}
-
-Field::Field(const WideString& name, const Bound& bound, const Vectoriu& globalDim) :
-	mName(name),
+Field::Field(const Matrixf& localToWorld, const Bound& bound, const Vectoriu& totalDimension, const Integer32U arity) :
+	mLocalToWorld(localToWorld),
 	mBound(bound),
-	mGlobalDim(globalDim),
-	mStorageMode(STORAGE_SLICE)
+	mDimension(totalDimension),
+	mArity(arity)
 {
-}
-
-Field::Field(const WideString& name, const Bound& bound, const Vectoriu& globalDim, const Vectoriu& blockDim) :
-	mName(name),
-	mBound(bound),
-	mGlobalDim(globalDim),
-	mBlockDim(blockDim),
-	mStorageMode(STORAGE_BLOCK)
-{
-	mGlobalDim.x = (mGlobalDim.x & 1) ? (mGlobalDim.x + 1) / mBlockDim.x * mBlockDim.x : mGlobalDim.x;
-	mGlobalDim.y = (mGlobalDim.y & 1) ? (mGlobalDim.y + 1) / mBlockDim.y * mBlockDim.y : mGlobalDim.y;
-	mGlobalDim.z = (mGlobalDim.z & 1) ? (mGlobalDim.z + 1) / mBlockDim.z * mBlockDim.z : mGlobalDim.z;
 }
 
 Field::~Field()
 {
 }
 
-const WideString& Field::GetName() const
+const Matrixf& Field::GetLocalToWorld() const
 {
-	return mName;
+	return mLocalToWorld;
 }
 
-Field::StorageMode Field::GetStorageMode() const
+const Matrixf& Field::GetWorldToLocal() const
 {
-	return mStorageMode;
+	return mWorldToLocal;
+}
+	
+const Bound& Field::GetBound() const
+{
+	return mBound;
 }
 
-const Vectoriu& Field::GetGlobalDim() const
+const Vectoriu& Field::GetDimension() const
 {
-	return mGlobalDim;
+	return mDimension;
 }
 
-const Vectoriu& Field::GetBlockDim() const
+Integer32U Field::GetArity() const
 {
-	return mBlockDim;
+	return mArity;
 }
 
-Vectorf Field::ConvertGlobalIndexToWorldPosition(const Vectoriu& globalIndex)
+Integer64U Field::GetSize() const
 {
-	const Vectorf& fieldSize = mBound.Size();
-	const Vectorf voxelSize(fieldSize.x / mGlobalDim.x, fieldSize.y / mGlobalDim.y, fieldSize.z / mGlobalDim.z);
-	return Vectorf(voxelSize.x * (globalIndex.x + 0.5f), voxelSize.y * (globalIndex.y + 0.5f), voxelSize.z * (globalIndex.z + 0.5f));
+	return mDimension.x * mDimension.y * mDimension.z * mArity * sizeof(Float);
 }
 
-void Field::Bind(const SemanticType semanticType, const WideString& semanticAlias, const ArrayRef& semanticArray)
+Vectorf Field::CalculateLocalPointFromIndex(const Vectoriu& index) const
 {
-	assert(semanticArray->GetDataType() == DATA_TYPE_FLOAT);
-	mBindings.insert(std::make_pair(semanticType, std::make_pair(semanticAlias, semanticArray)));
+	const Vectorf totalSize(mBound.Size());
+	const Vectorf elementSize(totalSize.x / mDimension.x, totalSize.y / mDimension.y, totalSize.z / mDimension.z);
+	const Vectorf localPoint(elementSize.x * (index.x + 0.5f), elementSize.y * (index.y + 0.5f), elementSize.z * (index.z + 0.5f));
+
+	return Transform(mLocalToWorld, localPoint);
 }
 
-bool Field::Query(const SemanticType semanticType)
+Bool Field::CalculateIndexFromWorldPoint(const Vectorf& worldPoint, Vectoriu& rIndex) const
 {
-	return (mBindings.find(semanticType) != mBindings.end());
-}
-
-bool Field::GetBinding(const SemanticType semanticType, WideString& rSemanticAlias, ArrayRef& rSemanticArray)
-{
-	std::map<SemanticType, NamedArrayRef>::iterator itr = mBindings.find(semanticType);
-	if (itr != mBindings.end())
+	Vectorf localPoint(Transform(mWorldToLocal, worldPoint));
+	if (mBound.IsContained(localPoint))
 	{
-		rSemanticAlias = itr->second.first;
-		rSemanticArray = itr->second.second;
+		localPoint -= mBound.min;
+
+		const Vectorf totalSize(mBound.Size());
+		const Vectorf elementSize(totalSize.x / mDimension.x, totalSize.y / mDimension.y, totalSize.z / mDimension.z);
+
+		rIndex.x = static_cast<int>(floor(localPoint.x / elementSize.x));
+		rIndex.y = static_cast<int>(floor(localPoint.y / elementSize.y));
+		rIndex.z = static_cast<int>(floor(localPoint.z / elementSize.z));
 
 		return true;
 	}
 
 	return false;
-}
-
-void Field::UnBind(const SemanticType semanticType)
-{
-	mBindings.erase(semanticType);
 }
 
 LEAVE_NAMESPACE_STOKES
