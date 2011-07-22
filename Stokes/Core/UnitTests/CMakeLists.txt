@@ -9,6 +9,9 @@ target_link_libraries(UnitTestDenseMappedField StokesCore)
 CXXTEST_ADD_TEST(UnitTestMatrix UnitTestMatrix.cpp "${CMAKE_CURRENT_SOURCE_DIR}/UnitTestMatrix.hpp")
 target_link_libraries(UnitTestMatrix StokesCore)
 
+CXXTEST_ADD_TEST(UnitTestNoiser UnitTestNoiser.cpp "${CMAKE_CURRENT_SOURCE_DIR}/UnitTestNoiser.hpp")
+target_link_libraries(UnitTestNoiser StokesCore)
+
 CXXTEST_ADD_TEST(UnitTestSimpleField UnitTestSimpleField.cpp "${CMAKE_CURRENT_SOURCE_DIR}/UnitTestSimpleField.hpp")
 target_link_libraries(UnitTestSimpleField StokesCore)
 

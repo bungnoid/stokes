@@ -27,6 +27,7 @@ public:
 	Integer64U GetSize() const;
 
 	Vectorf CalculateLocalPointFromIndex(const Vectoriu& index) const;
+	Vectorf CalculateWorldPointFromIndex(const Vectoriu& index) const;
 	Bool CalculateIndexFromWorldPoint(const Vectorf& worldPoint, Vectoriu& rIndex) const;
 
 	virtual Float* Access(const Vectoriu& index) = 0;

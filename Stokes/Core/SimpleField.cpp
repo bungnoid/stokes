@@ -5,7 +5,7 @@ ENTER_NAMESPACE_STOKES
 SimpleField::SimpleField(const Matrixf& localToWorld, const Bound& bound, const Vectoriu& dimension, const Integer32U arity) :
 	Field(localToWorld, bound, dimension, arity)
 {
-	mAddress = malloc(dimension.x * dimension.y * dimension.z * arity);
+	mAddress = malloc(dimension.x * dimension.y * dimension.z * arity * sizeof(Float));
 	assert(mAddress);
 }
 

@@ -3,6 +3,7 @@
 #include <cxxtest/TestSuite.h>
 
 #include <Stokes/Core/DenseMappedField.hpp>
+#include <Stokes/Core/Noiser.hpp>
 
 class UnitTestDenseMappedField : public CxxTest::TestSuite
 {
@@ -60,6 +61,36 @@ public:
 
 		// Remove file.
 		_wremove(path.c_str());
+	}
+
+	void testFBM()
+	{
+		const Stokes::Matrixf localToWorldMatrix;
+		const Stokes::Bound bound(0, 0, 0, 256, 256, 256);
+		const Stokes::Vectoriu dimension(256, 256, 256);
+		const Stokes::Integer32U arity = 1;
+		const Stokes::Integer32U pagedSliceCount = 16;
+
+		const Stokes::WideString path(L"testDenseMappedFieldFBM.dat");
+
+		mTestDenseMappedField.reset(new Stokes::DenseMappedField(localToWorldMatrix, bound, dimension, arity, pagedSliceCount));
+		TS_ASSERT(mTestDenseMappedField);
+
+		Stokes::FileMappingRef fileMapping = mTestDenseMappedField->GetFileMapping();
+		TS_ASSERT(fileMapping->Open(path, Stokes::FileMapping::MAPPING_MODE_READ_WRITE, mTestDenseMappedField->GetSize()));
+
+		Stokes::Vectoriu index;
+		for (index.z = 0; index.z < dimension.z; ++ index.z)
+		{
+			for (index.y = 0; index.y < dimension.y; ++ index.y)
+			{
+				for (index.x = 0; index.x < dimension.x; ++ index.x)
+				{
+					const Stokes::Vectorf localPoint = mTestDenseMappedField->CalculateLocalPointFromIndex(index);
+					mTestDenseMappedField->Access(index)[0] = Stokes::Noiser::FractalBrownianMotion(localPoint, 0.5, 4, 4, 4);
+				}
+			}
+		}
 	}
 
 private:

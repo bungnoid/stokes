@@ -50,9 +50,12 @@ Vectorf Field::CalculateLocalPointFromIndex(const Vectoriu& index) const
 {
 	const Vectorf totalSize(mBound.Size());
 	const Vectorf elementSize(totalSize.x / mDimension.x, totalSize.y / mDimension.y, totalSize.z / mDimension.z);
-	const Vectorf localPoint(elementSize.x * (index.x + 0.5f), elementSize.y * (index.y + 0.5f), elementSize.z * (index.z + 0.5f));
+	return Vectorf(elementSize.x * (index.x + 0.5f), elementSize.y * (index.y + 0.5f), elementSize.z * (index.z + 0.5f));
+}
 
-	return Transform(mLocalToWorld, localPoint);
+Vectorf Field::CalculateWorldPointFromIndex(const Vectoriu& index) const
+{
+	return Transform(mLocalToWorld, CalculateLocalPointFromIndex(index));
 }
 
 Bool Field::CalculateIndexFromWorldPoint(const Vectorf& worldPoint, Vectoriu& rIndex) const
