@@ -14,7 +14,7 @@ MappedField::~MappedField()
 {
 	for (std::map<Integer64U, Segement>::iterator itr = mSegements.begin(); itr != mSegements.end(); ++ itr)
 	{
-		mFileMapping->UnMapFromSwapFile(itr->second.address, );
+		mFileMapping->UnMapFromSwapFile(itr->second.address, itr->second.size);
 	}
 }
 

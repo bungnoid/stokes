@@ -23,13 +23,13 @@ Float* SparseMappedField::Access(const Vectoriu& index)
 
 	const Vectori64u blockIndex(index.x / mBlockDimension, index.y / mBlockDimension, index.z / mBlockDimension);
 	const Vectoriu blocksDimension(mDimension.x / mBlockDimension, mDimension.y / mBlockDimension, mDimension.z / mBlockDimension);
-	const Integer64U linearBlockIndex = (blocksDimension.x * blocksDimension.y * blockIndex.z + blocksDimension.x * blockIndex.y + blockIndex.x) * blockLength * mArity;
+	const Integer64U linearBlockIndex = (blocksDimension.x * blocksDimension.y * blockIndex.z + blocksDimension.x * blockIndex.y + blockIndex.x) * blockLength;
 
 	Float* blockAddress = MappedField::Map(linearBlockIndex, blockLength);
 
-	const Vectoriu subElementIndex(index.x % mBlockDimension, index.y % mBlockDimension, index.z % mBlockDimension);
-	const Integer32U linearSubElementIndex = mBlockDimension * mBlockDimension * subElementIndex.z + mBlockDimension * subElementIndex.y + subElementIndex.x;
-	return (blockAddress + linearSubElementIndex);
+	const Vectoriu subBlockIndex(index.x % mBlockDimension, index.y % mBlockDimension, index.z % mBlockDimension);
+	const Integer32U linearSubBlockIndex = (mBlockDimension * mBlockDimension * subBlockIndex.z + mBlockDimension * subBlockIndex.y + subBlockIndex.x) * mArity;
+	return (blockAddress + linearSubBlockIndex);
 }
 
 LEAVE_NAMESPACE_STOKES

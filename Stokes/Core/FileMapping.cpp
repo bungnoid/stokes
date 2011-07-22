@@ -123,6 +123,8 @@ void* FileMapping::MapToSwapFile(const Integer64U offset, const Integer32U size)
 {
 	assert(size);
 
+	LPVOID address = NULL;
+
 	DWORD desiredAccess = (mMappingMode == MAPPING_MODE_READ) ? FILE_MAP_READ : FILE_MAP_ALL_ACCESS;
 
 	HANDLE hFileMapping = ::OpenFileMappingW(desiredAccess, FALSE, mPath.c_str());
@@ -131,14 +133,11 @@ void* FileMapping::MapToSwapFile(const Integer64U offset, const Integer32U size)
 	{
 		ULARGE_INTEGER offsetInFile;
 		offsetInFile.QuadPart = offset;
-		LPVOID address = ::MapViewOfFile(hFileMapping, desiredAccess, offsetInFile.HighPart, offsetInFile.LowPart, size);
+		address = ::MapViewOfFile(hFileMapping, desiredAccess, offsetInFile.HighPart, offsetInFile.LowPart, size);
 		assert(address);
-		if (!address)
-		{
-			exit(::GetLastError());
-		}
-		return address;
 	}
+
+	return address;
 }
 
 void FileMapping::UnMapFromSwapFile(const void* address, const Integer32U length)

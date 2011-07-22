@@ -12,8 +12,8 @@ public:
 	{
 		// Fill dense array with numbers.
 		const Stokes::Matrixf localToWorldMatrix;
-		const Stokes::Bound bound(0, 0, 0, 1024, 1024, 64);
-		const Stokes::Vectoriu dimension(1024, 1024, 64);
+		const Stokes::Bound bound(0, 0, 0, 512, 512, 64);
+		const Stokes::Vectoriu dimension(512, 512, 64);
 		const Stokes::Vectori64u dimension64(dimension.x, dimension.y, dimension.z);
 		const Stokes::Integer32U arity = 4;
 		const Stokes::Integer32U pagedSliceCount = 16;
