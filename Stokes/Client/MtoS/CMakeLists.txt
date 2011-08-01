@@ -11,4 +11,4 @@ if(MSVC)
 endif()
 
 add_executable(MtoS MtoS.cpp)
-target_link_libraries(MtoS StokesCore Foundation OpenMaya OpenMayaFX)
+target_link_libraries(MtoS StokesCore StokesMaya)

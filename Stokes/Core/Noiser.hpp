@@ -1,12 +1,12 @@
-#ifndef NOISER_HPP
-#define NOISER_HPP
+#ifndef STOKES_CORE_NOISER_HPP
+#define STOKES_CORE_NOISER_HPP
 
 #include <Stokes/Core/DataType.hpp>
 #include <Stokes/Core/Vector.hpp>
 
 ENTER_NAMESPACE_STOKES
 
-class STOKES_API Noiser
+class STOKES_CORE_API Noiser
 {
 public:
 

@@ -1,5 +1,5 @@
-#ifndef PAGEDFIELD_HPP
-#define PAGEDFIELD_HPP
+#ifndef STOKES_CORE_MAPPEDFIELD_HPP
+#define STOKES_CORE_MAPPEDFIELD_HPP
 
 #include <map>
 
@@ -7,7 +7,7 @@
 
 ENTER_NAMESPACE_STOKES
 
-class STOKES_API MappedField : public Field
+class STOKES_CORE_API MappedField : public Field
 {
 public:
 

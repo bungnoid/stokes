@@ -1,11 +1,11 @@
-#ifndef SIMPLEFIELD_HPP
-#define SIMPLEFIELD_HPP
+#ifndef STOKES_CORE_SIMPLEFIELD_HPP
+#define STOKES_CORE_SIMPLEFIELD_HPP
 
 #include <Stokes/Core/Field.hpp>
 
 ENTER_NAMESPACE_STOKES
 
-class STOKES_API SimpleField : public Field
+class STOKES_CORE_API SimpleField : public Field
 {
 public:
 

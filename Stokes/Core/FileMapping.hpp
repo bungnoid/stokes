@@ -1,11 +1,11 @@
-#ifndef FILEMAPPING_HPP
-#define FILEMAPPING_HPP
+#ifndef STOKES_CORE_FILEMAPPING_HPP
+#define STOKES_CORE_FILEMAPPING_HPP
 
 #include <Stokes/Core/DataType.hpp>
 
 ENTER_NAMESPACE_STOKES
 
-class STOKES_API FileMapping
+class STOKES_CORE_API FileMapping
 {
 public:
 

@@ -1,33 +1,14 @@
-#ifndef API_HPP
-#define API_HPP
-
-#ifdef _MSC_VER
-#pragma warning(disable : 4251)
-#define STOKES_PLATFORM_WINDOWS
-#ifdef _M_X64
-#define STOKES_ARCH_X64
-#else
-#define STOKES_ARCH_X86
-#endif
-#else
-#ifdef __GNUC__
-#define STOKES_PLATFORM_POSIX
-#if defined __x86_64 || defined __amd64
-	#define STOKES_ARCH_X64
-#else
-	#define STOKES_ARCH_X86
-#endif
-#endif
-#endif
+#ifndef STOKES_CORE_API_HPP
+#define STOKES_CORE_API_HPP
 
 #ifdef _WIN32
-#ifdef STOKES_BUILDING
-#define STOKES_API __declspec(dllexport)
+#ifdef STOKES_CORE_BUILDING
+#define STOKES_CORE_API __declspec(dllexport)
 #else
-#define STOKES_API __declspec(dllimport)
+#define STOKES_CORE_API __declspec(dllimport)
 #endif
 #else
-#define STOKES_API __attribute__ ((visibility ("default")))
+#define STOKES_CORE_API __attribute__ ((visibility ("default")))
 #endif
 
 #ifndef STOKES_NAMESPACE

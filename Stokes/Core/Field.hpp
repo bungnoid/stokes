@@ -1,5 +1,5 @@
-#ifndef FIELD_HPP
-#define FIELD_HPP
+#ifndef STOKES_CORE_FIELD_HPP
+#define STOKES_CORE_FIELD_HPP
 
 #include <Stokes/Core/Bound.hpp>
 #include <Stokes/Core/FileMapping.hpp>
@@ -8,7 +8,7 @@
 
 ENTER_NAMESPACE_STOKES
 
-class STOKES_API Field
+class STOKES_CORE_API Field
 {
 public:
 

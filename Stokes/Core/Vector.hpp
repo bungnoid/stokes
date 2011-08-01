@@ -1,5 +1,5 @@
-#ifndef VECTOR_HPP
-#define VECTOR_HPP
+#ifndef STOKES_CORE_VECTOR_HPP
+#define STOKES_CORE_VECTOR_HPP
 
 #include <iostream>
 

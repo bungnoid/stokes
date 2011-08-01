@@ -1,11 +1,11 @@
-#ifndef DENSEMAPPEDFIELD_HPP
-#define DENSEMAPPEDFIELD_HPP
+#ifndef STOKES_CORE_DENSEMAPPEDFIELD_HPP
+#define STOKES_CORE_DENSEMAPPEDFIELD_HPP
 
 #include <Stokes/Core/MappedField.hpp>
 
 ENTER_NAMESPACE_STOKES
 
-class STOKES_API DenseMappedField : public MappedField
+class STOKES_CORE_API DenseMappedField : public MappedField
 {
 public:
 

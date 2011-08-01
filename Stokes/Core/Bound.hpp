@@ -1,5 +1,5 @@
-#ifndef BOUND_HPP
-#define BOUND_HPP
+#ifndef STOKES_CORE_BOUND_HPP
+#define STOKES_CORE_BOUND_HPP
 
 #include <cassert>
 #include <cfloat>

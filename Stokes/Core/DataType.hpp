@@ -1,11 +1,12 @@
-#ifndef DATATYPE_HPP
-#define DATATYPE_HPP
+#ifndef STOKES_CORE_DATATYPE_HPP
+#define STOKES_CORE_DATATYPE_HPP
 
 #include <boost/shared_ptr.hpp>
 
 #include <string>
 
 #include <Stokes/Core/API.hpp>
+#include <Stokes/Core/Platform.hpp>
 
 ENTER_NAMESPACE_STOKES
 

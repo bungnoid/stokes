@@ -1,5 +1,5 @@
-#ifndef EMITTER_HPP
-#define EMITTER_HPP
+#ifndef STOKES_CORE_EMITTER_HPP
+#define STOKES_CORE_EMITTER_HPP
 
 #include <set>
 
@@ -7,7 +7,7 @@
 
 ENTER_NAMESPACE_STOKES
 
-class STOKES_API Emitter
+class STOKES_CORE_API Emitter
 {
 public:
 
@@ -25,7 +25,7 @@ public:
 	void SetNoiseAmplitudeDisplaced(const Float noiseAmplitudeDisplaced);
 	Float GetNoiseAmplitudeDisplaced() const;
 
-	virtual Bound CalculateWorldBound() const = 0;
+	void virtual CalculateWorldBound(Bound& bound) const = 0;
 
 	virtual void Fill(const FieldRef& field) = 0;
 

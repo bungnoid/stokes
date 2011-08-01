@@ -1,4 +1,4 @@
-#ifndef CAMERA_HPP
-#define CAMERA_HPP
+#ifndef STOKES_CORE_CAMERA_HPP
+#define STOKES_CORE_CAMERA_HPP
 
 #endif

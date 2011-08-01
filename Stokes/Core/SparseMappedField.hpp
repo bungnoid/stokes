@@ -1,11 +1,11 @@
-#ifndef SPARSEFIELD_HPP
-#define SPARSEFIELD_HPP
+#ifndef STOKES_CORE_SPARSEFIELD_HPP
+#define STOKES_CORE_SPARSEFIELD_HPP
 
 #include <Stokes/Core/MappedField.hpp>
 
 ENTER_NAMESPACE_STOKES
 
-class STOKES_API SparseMappedField : public MappedField
+class STOKES_CORE_API SparseMappedField : public MappedField
 {
 public:
 

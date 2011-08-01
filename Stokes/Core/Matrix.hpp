@@ -1,5 +1,5 @@
-#ifndef STOKES_MATRIX_HPP
-#define STOKES_MATRIX_HPP
+#ifndef STOKES_CORE_MATRIX_HPP
+#define STOKES_CORE_MATRIX_HPP
 
 #include <iterator>
 

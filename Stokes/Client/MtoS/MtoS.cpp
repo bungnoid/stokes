@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
 	const MMatrix surfaceMatrix = surface.transformationMatrix();
 	const MBoundingBox surfaceBound = surface.boundingBox();
 
-	///
+	//
 	Stokes::Matrixf fieldMatrix;
 	for (int i = 0; i < 4; ++ i)
 	{
