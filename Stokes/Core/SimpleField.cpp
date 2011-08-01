@@ -7,8 +7,8 @@ SimpleField::SimpleField(const Matrixf& localToWorld, const Bound& bound, const 
 {
 	const size_t size = dimension.x * dimension.y * dimension.z * arity * sizeof(Float);
 	mAddress = malloc(size);
-	memset(mAddress, 0, size);
 	assert(mAddress);
+	memset(mAddress, 0, size);
 }
 
 SimpleField::~SimpleField()

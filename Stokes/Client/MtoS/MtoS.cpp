@@ -1,5 +1,7 @@
 #include <omp.h>
 
+#include <boost/random.hpp>
+
 #include <maya/MBoundingBox.h>
 #include <maya/MFileIO.h>
 #include <maya/MFnNurbsSurface.h>
@@ -56,20 +58,12 @@ int main(int argc, char* argv[])
 	omp_lock_t lock;
 	omp_init_lock(&lock);
 
-	const int samples = 10000000;
-	double* u = new double[samples];
-	double* v = new double[samples];
-	double* s = new double[samples];
-	double* t = new double[samples];
-	for (int i = 0; i < samples; ++ i)
-	{
-		u[i] = (double)rand() / (double)RAND_MAX;
-		v[i] = (double)rand() / (double)RAND_MAX;
-		s[i] = (double)rand() / (double)RAND_MAX;
-		t[i] = (double)rand() / (double)RAND_MAX;
-	}
-
 	int i = 0;
+	const int samples = 100000000;
+
+	boost::random::mt19937 seed;
+	boost::uniform_real<> dist(0.0, 1.0);
+	boost::variate_generator<boost::mt19937&, boost::uniform_real<> > rng(seed, dist);
 
 	#pragma omp parallel private(i)
 	{
@@ -79,27 +73,31 @@ int main(int argc, char* argv[])
 			MPoint p;
 			MVector du, dv;
 
+			// MFnNurbsSurface::getDerivativesAtParm is not thread-safe.
 			omp_set_lock(&lock);
-			surface.getDerivativesAtParm(u[i], v[i], p, du, dv, MSpace::kObject);
+
+			double u = rng();
+			double v = rng();
+			Stokes::Vectorf noisedPoint(rng() * 16, rng() * 16, u * 16);
+
+			surface.getDerivativesAtParm(u, v, p, du, dv, MSpace::kObject);
 			omp_unset_lock(&lock);
 
+			// Displace the sample along normal.
 			du.normalize();
 			dv.normalize();
 			MVector n = du ^ dv;
-
-			Stokes::Vectorf noisedPoint(s[i], t[i], u[i]);
-			Stokes::Float displacement = Stokes::Noiser::FractalBrownianMotion(noisedPoint, 0.5f, 16.5f, 8.0f, 0.5f) * 1.75f;
-			Stokes::Vectorf displacementVector(n.x * displacement, n.y * displacement, n.z * displacement);
-
-			Stokes::Vectorf localPoint(p.x, p.y, p.z);
-			localPoint += displacementVector;
+			
+			Stokes::Float displacement = Stokes::Noiser::FractalBrownianMotion(noisedPoint, 0.5f, 4.5f, 3.0f, 0.5f);
+			Stokes::Vectorf localPoint(p.x + n.x * displacement, p.y + n.y * displacement, p.z + n.z * displacement);
 
 			Stokes::Vectorf worldPoint = Stokes::Transform(fieldMatrix, localPoint);
 
+			// Fill the density.
 			Stokes::Vectoriu index;
 			if (field->CalculateIndexFromWorldPoint(worldPoint, index))
 			{
-				Stokes::Float density = Stokes::Noiser::FractalBrownianMotion(noisedPoint, 1.0f, 8.0f, 1.0f, 0.5f) * 0.5f;
+				Stokes::Float density = Stokes::Noiser::FractalBrownianMotion(noisedPoint, 0.5f, 8.0f, 1.0f, 0.5f);
 				if (density > 0)
 				{
 					omp_set_lock(&lock);
@@ -112,7 +110,7 @@ int main(int argc, char* argv[])
 
 	///
 	Stokes::Float* fieldData = field->Access(Stokes::Vectoriu(0, 0, 0));
-	FILE* fp = fopen("NurbsSurface8.raw", "wb");
+	FILE* fp = fopen("NurbsSurfaceMT10M.raw", "wb");
 	fwrite(fieldData, field->GetSize(), 1, fp);
 	fclose(fp);
 

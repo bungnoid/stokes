@@ -8,8 +8,8 @@ class UnitTestNoiser : public CxxTest::TestSuite
 public:
 
 	UnitTestNoiser() :
-	  bound(0, 0, 0, 32, 32, 32),
-	  dimension(128, 128, 128),
+	  bound(0, 0, 0, 64, 64, 1),
+	  dimension(512, 512, 1),
 	  arity(1)
 	{
 	}
@@ -35,6 +35,7 @@ public:
 		}
 
 		FILE* fp = fopen("testNoisedField.raw", "wb");
+		TS_ASSERT(fp);
 		fwrite(noiseField.Access(Stokes::Vectoriu(0, 0, 0)), noiseField.GetSize(), 1, fp);
 		fclose(fp);
 	}
@@ -51,12 +52,13 @@ public:
 				for (index.x = 0; index.x < dimension.x; ++ index.x)
 				{
 					const Stokes::Vectorf localPoint = fbmField.CalculateLocalPointFromIndex(index);
-					fbmField.Access(index)[0] = Stokes::Noiser::FractalBrownianMotion(localPoint, 2, 8.5, 2, 4);
+					fbmField.Access(index)[0] = Stokes::Noiser::FractalBrownianMotion(localPoint, 0.1, 8, 8, 1);
 				}
 			}
 		}
 
 		FILE* fp = fopen("testFBMField.raw", "wb");
+		TS_ASSERT(fp);
 		fwrite(fbmField.Access(Stokes::Vectoriu(0, 0, 0)), fbmField.GetSize(), 1, fp);
 		fclose(fp);
 	}
@@ -79,6 +81,7 @@ public:
 		}
 
 		FILE* fp = fopen("testTurbulenceField.raw", "wb");
+		TS_ASSERT(fp);
 		fwrite(turbulenceField.Access(Stokes::Vectoriu(0, 0, 0)), turbulenceField.GetSize(), 1, fp);
 		fclose(fp);
 	}
