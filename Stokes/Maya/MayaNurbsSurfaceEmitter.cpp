@@ -6,7 +6,9 @@
 #include <maya/MFileIO.h>
 #include <maya/MFnNurbsSurface.h>
 #include <maya/MItDependencyNodes.h>
+#include <maya/MPoint.h>
 
+#include <Stokes/Core/Bound.hpp>
 #include <Stokes/Core/Noiser.hpp>
 
 #include <Stokes/Maya/MayaNurbsSurfaceEmitter.hpp>
@@ -22,9 +24,21 @@ MayaNurbsSurfaceEmitter::~MayaNurbsSurfaceEmitter()
 {
 }
 
-
 void MayaNurbsSurfaceEmitter::CalculateWorldBound(Bound& bound) const
 {
+	assert(mMayaObject.hasFn(MFn::kNurbsSurface));
+
+	MFnNurbsSurface surface(mMayaObject);
+	const MBoundingBox& surfaceBound = surface.boundingBox();
+	const MPoint& min = surfaceBound.min();
+	const MPoint& max = surfaceBound.max();
+
+	bound.min.x = static_cast<Float>(min.x);
+	bound.min.y = static_cast<Float>(min.y);
+	bound.min.z = static_cast<Float>(min.z);
+	bound.max.x = static_cast<Float>(max.x);
+	bound.max.y = static_cast<Float>(max.y);
+	bound.max.z = static_cast<Float>(max.z);
 }
 
 void MayaNurbsSurfaceEmitter::Fill(const FieldRef& field)
@@ -61,7 +75,7 @@ void MayaNurbsSurfaceEmitter::Fill(const FieldRef& field)
 
 			double u = rng();
 			double v = rng();
-			Stokes::Vectorf noisedPoint(rng(), rng(), u);
+			Vectorf noisedPoint(static_cast<Float>(rng()), static_cast<Float>(rng()), static_cast<Float>(u));
 
 			surface.getDerivativesAtParm(u, v, p, du, dv, MSpace::kObject);
 			omp_unset_lock(&lock);
@@ -72,7 +86,9 @@ void MayaNurbsSurfaceEmitter::Fill(const FieldRef& field)
 			MVector n = du ^ dv;
 			
 			Stokes::Float displacement = Stokes::Noiser::FractalBrownianMotion(noisedPoint, 0.5f, 4.5f, 3.0f, 0.5f);
-			Stokes::Vectorf localPoint(p.x + n.x * displacement, p.y + n.y * displacement, p.z + n.z * displacement);
+			n *= displacement;
+			p += n;
+			Stokes::Vectorf localPoint(static_cast<Float>(p.x), static_cast<Float>(p.y), static_cast<Float>(p.z));
 
 			Stokes::Vectorf worldPoint = Stokes::Transform(localToWorld, localPoint);
 
