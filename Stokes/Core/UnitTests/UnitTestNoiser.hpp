@@ -52,7 +52,7 @@ public:
 				for (index.x = 0; index.x < dimension.x; ++ index.x)
 				{
 					const Stokes::Vectorf localPoint = fbmField.CalculateLocalPointFromIndex(index);
-					fbmField.Access(index)[0] = Stokes::Noiser::FractalBrownianMotion(localPoint, 0.1, 8, 8, 1);
+					fbmField.Access(index)[0] = Stokes::Noiser::FractalBrownianMotion(localPoint, 0.1, 3, 3);
 				}
 			}
 		}

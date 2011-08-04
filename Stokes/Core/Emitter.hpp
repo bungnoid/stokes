@@ -14,14 +14,36 @@ public:
 	Emitter();
 	virtual ~Emitter();
 
-	void SetNoiseOctaves(const Float noiseOctaves);
-	Float GetNoiseOctaves() const;
-	void SetNoiseOctavesDisplaced(const Float noiseOctavesDisplaced);
-	Float GetNoiseOctavesDisplaced() const;
+	void SetSample(const Integer32U sample);
+	Integer32U GetSample() const;
+
+	void SetNoiseH(const Float noiseH);
+	Float GetNoiseH() const;
+
+	void SetNoiseHDisplaced(const Float noiseHDisplaced);
+	Float GetNoiseHDisplaced() const;
+
+	void SetNoiseLacunarity(const Float noiseLacunarity);
+	Float GetNoiseLacunarity() const;
+
+	void SetNoiseLacunarityDisplaced(const Float noiseLacunarityDisplaced);
+	Float GetNoiseLacunarityDisplaced() const;
+
+	void SetNoiseOctave(const Float noiseOctave);
+	Float GetNoiseOctave() const;
+
+	void SetNoiseOctaveDisplaced(const Float noiseOctaveDisplaced);
+	Float GetNoiseOctaveDisplaced() const;
+
 	void SetNoisePeriod(const Float noiseOctavesPeriod);
 	Float GetNoisePeriod() const;
+
 	void SetNoisePeriodDisplaced(const Float noiseAmplitude);
 	Float GetNoisePeriodDisplaced() const;
+
+	void SetNoiseAmplitude(const Float noiseAmplitude);
+	Float GetNoiseAmplitude() const;
+
 	void SetNoiseAmplitudeDisplaced(const Float noiseAmplitudeDisplaced);
 	Float GetNoiseAmplitudeDisplaced() const;
 
@@ -31,10 +53,20 @@ public:
 
 protected:
 
-	Float mNoiseOctaves;
-	Float mNoiseOctavesDisplaced;
+	Integer32U mSample;
+
+	Float mNoiseH;
+	Float mNoiseHDisplaced;
+
+	Float mNoiseLacunarity;
+	Float mNoiseLacunarityDisplaced;
+
+	Float mNoiseOctave;
+	Float mNoiseOctaveDisplaced;
+
 	Float mNoisePeriod;
 	Float mNoisePeriodDisplaced;
+
 	Float mNoiseAmplitude;
 	Float mNoiseAmplitudeDisplaced;
 };

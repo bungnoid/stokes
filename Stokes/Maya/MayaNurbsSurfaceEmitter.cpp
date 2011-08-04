@@ -10,6 +10,7 @@
 
 #include <Stokes/Core/Bound.hpp>
 #include <Stokes/Core/Noiser.hpp>
+#include <Stokes/Core/Random.hpp>
 
 #include <Stokes/Maya/MayaNurbsSurfaceEmitter.hpp>
 
@@ -33,12 +34,12 @@ void MayaNurbsSurfaceEmitter::CalculateWorldBound(Bound& bound) const
 	const MPoint& min = surfaceBound.min();
 	const MPoint& max = surfaceBound.max();
 
-	bound.min.x = static_cast<Float>(min.x);
-	bound.min.y = static_cast<Float>(min.y);
-	bound.min.z = static_cast<Float>(min.z);
-	bound.max.x = static_cast<Float>(max.x);
-	bound.max.y = static_cast<Float>(max.y);
-	bound.max.z = static_cast<Float>(max.z);
+	bound.min.x = static_cast<Float>(min.x) - mNoiseAmplitudeDisplaced;
+	bound.min.y = static_cast<Float>(min.y) - mNoiseAmplitudeDisplaced;
+	bound.min.z = static_cast<Float>(min.z) - mNoiseAmplitudeDisplaced;
+	bound.max.x = static_cast<Float>(max.x) + mNoiseAmplitudeDisplaced;
+	bound.max.y = static_cast<Float>(max.y) + mNoiseAmplitudeDisplaced;
+	bound.max.z = static_cast<Float>(max.z) + mNoiseAmplitudeDisplaced;
 }
 
 void MayaNurbsSurfaceEmitter::Fill(const FieldRef& field)
@@ -56,16 +57,11 @@ void MayaNurbsSurfaceEmitter::Fill(const FieldRef& field)
 	omp_init_lock(&lock);
 
 	int i = 0;
-	const int samples = 100000000;
-
-	boost::random::mt19937 seed;
-	boost::uniform_real<> dist(0.0, 1.0);
-	boost::variate_generator<boost::mt19937&, boost::uniform_real<> > rng(seed, dist);
 
 	#pragma omp parallel private(i)
 	{
 		#pragma omp for
-		for (i = 0; i < samples; ++ i)
+		for (i = 0; i < static_cast<int>(mSample); ++ i)
 		{
 			MPoint p;
 			MVector du, dv;
@@ -73,9 +69,9 @@ void MayaNurbsSurfaceEmitter::Fill(const FieldRef& field)
 			// MFnNurbsSurface::getDerivativesAtParm is not thread-safe.
 			omp_set_lock(&lock);
 
-			double u = rng();
-			double v = rng();
-			Vectorf noisedPoint(static_cast<Float>(rng()), static_cast<Float>(rng()), static_cast<Float>(u));
+			Double u = Random::NextAsDouble();
+			Double v = Random::NextAsDouble();
+			Vectorf noisedPoint(Random::NextAsFloat(), static_cast<Float>(u), Random::NextAsFloat());
 
 			surface.getDerivativesAtParm(u, v, p, du, dv, MSpace::kObject);
 			omp_unset_lock(&lock);
@@ -85,7 +81,7 @@ void MayaNurbsSurfaceEmitter::Fill(const FieldRef& field)
 			dv.normalize();
 			MVector n = du ^ dv;
 			
-			Stokes::Float displacement = Stokes::Noiser::FractalBrownianMotion(noisedPoint, 0.5f, 4.5f, 3.0f, 0.5f);
+			Stokes::Float displacement = Stokes::Noiser::FractalBrownianMotion(noisedPoint, mNoiseHDisplaced, mNoiseLacunarityDisplaced, mNoiseOctaveDisplaced) * mNoiseAmplitudeDisplaced;
 			n *= displacement;
 			p += n;
 			Stokes::Vectorf localPoint(static_cast<Float>(p.x), static_cast<Float>(p.y), static_cast<Float>(p.z));
@@ -96,8 +92,8 @@ void MayaNurbsSurfaceEmitter::Fill(const FieldRef& field)
 			Stokes::Vectoriu index;
 			if (field->CalculateIndexFromWorldPoint(worldPoint, index))
 			{
-				Stokes::Float density = Stokes::Noiser::FractalBrownianMotion(noisedPoint, 0.5f, 8.0f, 1.0f, 0.5f);
-				if (density > 0)
+				Stokes::Float density = Stokes::Noiser::FractalBrownianMotion(noisedPoint, mNoiseH, mNoiseLacunarity, mNoiseOctave) * mNoiseAmplitude;
+				if (density > 0.0f)
 				{
 					omp_set_lock(&lock);
 					field->Access(index)[0] += density;

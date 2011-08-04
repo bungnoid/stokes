@@ -87,7 +87,7 @@ public:
 				for (index.x = 0; index.x < dimension.x; ++ index.x)
 				{
 					const Stokes::Vectorf localPoint = mTestDenseMappedField->CalculateLocalPointFromIndex(index);
-					mTestDenseMappedField->Access(index)[0] = Stokes::Noiser::FractalBrownianMotion(localPoint, 0.5, 4, 4, 4);
+					mTestDenseMappedField->Access(index)[0] = Stokes::Noiser::FractalBrownianMotion(localPoint, 0.5, 4, 4);
 				}
 			}
 		}

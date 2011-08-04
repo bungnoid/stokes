@@ -12,7 +12,7 @@ public:
 
 	static Float Noise(Float x, Float y, Float z);
 
-	static Float FractalBrownianMotion(Vectorf localPoint, Float H, Float octave, Float gain, Float lacunarity);
+	static Float FractalBrownianMotion(Vectorf localPoint, Float H, Float lacunarity, Float octave);
 
 	static Float Turbulence(Vectorf localPoint, Float frequency);
 };

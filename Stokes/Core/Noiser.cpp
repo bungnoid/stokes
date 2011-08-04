@@ -72,7 +72,7 @@ static Integer32 p[512] =
 	128, 195,  78,  66, 215,  61, 156, 180
 };
 
-inline static Float fade (Float t) 
+inline static Float fade(Float t) 
 {
     return (t * t * t * (t * (t * 6.0f - 15.0f) + 10.0f));
 }
@@ -121,7 +121,7 @@ Float Noiser::Noise(Float x, Float y, Float z)
                                     grad(p[BB + 1], x - 1, y - 1, z - 1)))));
 }
 
-Float Noiser::FractalBrownianMotion(Vectorf localPoint, Float H, Float octave, Float gain, Float lacunarity)
+Float Noiser::FractalBrownianMotion(Vectorf localPoint, Float H, Float lacunarity, Float octave)
 {
 	Float fbm = 0.0f;
 
@@ -129,7 +129,9 @@ Float Noiser::FractalBrownianMotion(Vectorf localPoint, Float H, Float octave, F
 	for (i = 0; i < octave; ++ i)
 	{
 		fbm += Noise(localPoint.x, localPoint.y, localPoint.z) * powf(lacunarity, - H * i);
-		localPoint *= lacunarity;
+		localPoint.x *= lacunarity;
+		localPoint.y *= lacunarity;
+		localPoint.z *= lacunarity;
 	}
 	Float reminder = octave - static_cast<Integer32>(octave);
 	if (reminder)

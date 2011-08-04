@@ -21,6 +21,18 @@ int main(int argc, char* argv[])
 		if (mayaObject.hasFn(MFn::kNurbsSurface))
 		{
 			nurbsSurfaceEmitter.reset(new Stokes::MayaNurbsSurfaceEmitter(mayaObject));
+
+			nurbsSurfaceEmitter->SetSample(100000000);
+			nurbsSurfaceEmitter->SetNoiseAmplitude(10.15f);
+			nurbsSurfaceEmitter->SetNoiseAmplitudeDisplaced(0.25f);
+			nurbsSurfaceEmitter->SetNoiseH(0.125f);
+			nurbsSurfaceEmitter->SetNoiseHDisplaced(0.0725f);
+			nurbsSurfaceEmitter->SetNoiseLacunarity(10.15f);
+			nurbsSurfaceEmitter->SetNoiseLacunarityDisplaced(20.25f);
+			nurbsSurfaceEmitter->SetNoiseOctave(1.5f);
+			nurbsSurfaceEmitter->SetNoiseOctaveDisplaced(99.5f);
+
+			break;
 		}
 	}
 
