@@ -6,6 +6,7 @@
 #include <maya/MFileIO.h>
 #include <maya/MFnNurbsSurface.h>
 #include <maya/MItDependencyNodes.h>
+#include <maya/MPlug.h>
 #include <maya/MPoint.h>
 
 #include <Stokes/Core/Bound.hpp>
@@ -34,12 +35,12 @@ void MayaNurbsSurfaceEmitter::CalculateWorldBound(Bound& bound) const
 	const MPoint& min = surfaceBound.min();
 	const MPoint& max = surfaceBound.max();
 
-	bound.min.x = static_cast<Float>(min.x) - mNoiseAmplitudeDisplaced;
-	bound.min.y = static_cast<Float>(min.y) - mNoiseAmplitudeDisplaced;
-	bound.min.z = static_cast<Float>(min.z) - mNoiseAmplitudeDisplaced;
-	bound.max.x = static_cast<Float>(max.x) + mNoiseAmplitudeDisplaced;
-	bound.max.y = static_cast<Float>(max.y) + mNoiseAmplitudeDisplaced;
-	bound.max.z = static_cast<Float>(max.z) + mNoiseAmplitudeDisplaced;
+	bound.min.x = static_cast<Float>(min.x) - mDisplacedAmplitude;
+	bound.min.y = static_cast<Float>(min.y) - mDisplacedAmplitude;
+	bound.min.z = static_cast<Float>(min.z) - mDisplacedAmplitude;
+	bound.max.x = static_cast<Float>(max.x) + mDisplacedAmplitude;
+	bound.max.y = static_cast<Float>(max.y) + mDisplacedAmplitude;
+	bound.max.z = static_cast<Float>(max.z) + mDisplacedAmplitude;
 }
 
 void MayaNurbsSurfaceEmitter::Fill(const FieldRef& field)
@@ -48,9 +49,22 @@ void MayaNurbsSurfaceEmitter::Fill(const FieldRef& field)
 
 	MFnNurbsSurface surface(mMayaObject);
 
-	const Matrixf& localToWorld = field->GetLocalToWorld();
+	// Get the range for U and V.
+	MPlug minValueUPlug = surface.findPlug("minValueU");
+	MPlug maxValueUPlug = surface.findPlug("maxValueU");
+	MPlug minValueVPlug = surface.findPlug("minValueV");
+	MPlug maxValueVPlug = surface.findPlug("maxValueV");
 
-	///
+	const Double minValueU = minValueUPlug.asDouble();
+	const Double maxValueU = maxValueUPlug.asDouble();
+	const Double minValueV = minValueVPlug.asDouble();
+	const Double maxValueV = maxValueVPlug.asDouble();
+
+	const Double valueURange = maxValueU - minValueU;
+	const Double valueVRange = maxValueV - minValueV;
+
+	// Fill field.
+
 	omp_set_num_threads(8);
 
 	omp_lock_t lock;
@@ -58,6 +72,7 @@ void MayaNurbsSurfaceEmitter::Fill(const FieldRef& field)
 
 	int i = 0;
 
+	const Matrixf& localToWorld = field->GetLocalToWorld();
 	#pragma omp parallel private(i)
 	{
 		#pragma omp for
@@ -69,9 +84,9 @@ void MayaNurbsSurfaceEmitter::Fill(const FieldRef& field)
 			// MFnNurbsSurface::getDerivativesAtParm is not thread-safe.
 			omp_set_lock(&lock);
 
-			Double u = Random::NextAsDouble();
-			Double v = Random::NextAsDouble();
-			Vectorf noisedPoint(Random::NextAsFloat(), static_cast<Float>(u), Random::NextAsFloat());
+			Double u = Random::NextAsDouble() * valueURange + minValueU;
+			Double v = Random::NextAsDouble() * valueVRange + minValueV;
+			Vectorf noisedPoint(static_cast<Float>(u) * mScale.x - mOffset.x, Random::NextAsFloat() * mScale.y - mOffset.y, static_cast<Float>(v) * mScale.z - mOffset.z);
 
 			surface.getDerivativesAtParm(u, v, p, du, dv, MSpace::kObject);
 			omp_unset_lock(&lock);
@@ -81,18 +96,17 @@ void MayaNurbsSurfaceEmitter::Fill(const FieldRef& field)
 			dv.normalize();
 			MVector n = du ^ dv;
 			
-			Stokes::Float displacement = Stokes::Noiser::FractalBrownianMotion(noisedPoint, mNoiseHDisplaced, mNoiseLacunarityDisplaced, mNoiseOctaveDisplaced) * mNoiseAmplitudeDisplaced;
+			Stokes::Float displacement = Stokes::Noiser::FractalBrownianMotion(noisedPoint, mDisplacedH, mDisplacedLacunarity, mDisplacedOctave) * mDisplacedAmplitude;
 			n *= displacement;
 			p += n;
-			Stokes::Vectorf localPoint(static_cast<Float>(p.x), static_cast<Float>(p.y), static_cast<Float>(p.z));
-
-			Stokes::Vectorf worldPoint = Stokes::Transform(localToWorld, localPoint);
+			Vectorf localPoint(static_cast<Float>(p.x), static_cast<Float>(p.y), static_cast<Float>(p.z));
+			Vectorf worldPoint = Stokes::Transform(localToWorld, localPoint);
 
 			// Fill the density.
-			Stokes::Vectoriu index;
+			Vectoriu index;
 			if (field->CalculateIndexFromWorldPoint(worldPoint, index))
 			{
-				Stokes::Float density = Stokes::Noiser::FractalBrownianMotion(noisedPoint, mNoiseH, mNoiseLacunarity, mNoiseOctave) * mNoiseAmplitude;
+				Stokes::Float density = Stokes::Noiser::FractalBrownianMotion(noisedPoint, mH, mLacunarity, mOctave) * mAmplitude;
 				if (density > 0.0f)
 				{
 					omp_set_lock(&lock);

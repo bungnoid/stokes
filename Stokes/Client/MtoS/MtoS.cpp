@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
 	S = MFileIO::open(argv[1]);
 	CHECK_MSTATUS(S);
 
-	Stokes::EmitterRef nurbsSurfaceEmitter;
+	Stokes::NoisedEmitterRef nurbsSurfaceEmitter;
 	for (MItDependencyNodes itr(MFn::kNurbsSurface); !itr.isDone(); itr.next())
 	{
 		MObject mayaObject(itr.item());
@@ -23,14 +23,14 @@ int main(int argc, char* argv[])
 			nurbsSurfaceEmitter.reset(new Stokes::MayaNurbsSurfaceEmitter(mayaObject));
 
 			nurbsSurfaceEmitter->SetSample(100000000);
-			nurbsSurfaceEmitter->SetNoiseAmplitude(10.15f);
-			nurbsSurfaceEmitter->SetNoiseAmplitudeDisplaced(0.25f);
-			nurbsSurfaceEmitter->SetNoiseH(0.125f);
-			nurbsSurfaceEmitter->SetNoiseHDisplaced(0.0725f);
-			nurbsSurfaceEmitter->SetNoiseLacunarity(10.15f);
-			nurbsSurfaceEmitter->SetNoiseLacunarityDisplaced(20.25f);
-			nurbsSurfaceEmitter->SetNoiseOctave(1.5f);
-			nurbsSurfaceEmitter->SetNoiseOctaveDisplaced(99.5f);
+			nurbsSurfaceEmitter->SetAmplitude(1.15f);
+			nurbsSurfaceEmitter->SetDisplacedAmplitude(1.25f);
+			nurbsSurfaceEmitter->SetH(0.825f);
+			nurbsSurfaceEmitter->SetDisplacedH(0.525f);
+			nurbsSurfaceEmitter->SetLacunarity(1.15f);
+			nurbsSurfaceEmitter->SetDisplacedLacunarity(5.725f);
+			nurbsSurfaceEmitter->SetOctave(1.5f);
+			nurbsSurfaceEmitter->SetDisplacedOctave(3.5f);
 
 			break;
 		}
@@ -40,6 +40,16 @@ int main(int argc, char* argv[])
 
 	Stokes::Bound bound;
 	nurbsSurfaceEmitter->CalculateWorldBound(bound);
+
+	Stokes::Vectorf scale = bound.Size();
+	scale.x *= 0.25f;
+	scale.y *= 0.25f;
+	scale.z *= 0.25f;
+	nurbsSurfaceEmitter->SetScale(scale);
+
+	Stokes::Vectorf offset(- scale.x * 0.5f, - scale.y * 0.5f, - scale.z * 0.5f);
+	nurbsSurfaceEmitter->SetOffset(offset);
+	
 
 	Stokes::Vectoriu dimension(512, 512, 512);
 

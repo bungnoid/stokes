@@ -8,10 +8,14 @@ class UnitTestNoiser : public CxxTest::TestSuite
 public:
 
 	UnitTestNoiser() :
-	  bound(0, 0, 0, 64, 64, 1),
-	  dimension(512, 512, 1),
-	  arity(1)
+	  width(512),
+	  height(512),
+
+	  x(512.0f),
+	  y(512.0f)
 	{
+		cellWidth = x / width;
+		cellHeight = y / height;
 	}
 	~UnitTestNoiser()
 	{
@@ -19,77 +23,99 @@ public:
 
 	void testNoise()
 	{
-		Stokes::SimpleField noiseField(localToWorld, bound, dimension, arity);
- 
-		Stokes::Vectoriu index;
-		for (index.z = 0; index.z < dimension.z; ++ index.z)
+		float* pixels = new float[width * height];
+		float minValue = 1e6f, maxValue = - 1e6f;
+
+		for (int y = 0; y < height; ++ y)
 		{
-			for (index.y = 0; index.y < dimension.y; ++ index.y)
+			for (int x = 0; x < width; ++ x)
 			{
-				for (index.x = 0; index.x < dimension.x; ++ index.x)
-				{
-					const Stokes::Vectorf localPoint = noiseField.CalculateLocalPointFromIndex(index);
-					noiseField.Access(index)[0] = Stokes::Noiser::Noise(localPoint.x, localPoint.y, localPoint.z);
-				}
+				//float z = (float)rand() / (float)RAND_MAX * y;
+				Stokes::Vectorf np(cellWidth * (x + 0.5f), cellHeight * (y + 0.5f), 0);
+				float r = Stokes::Noiser::Noise(np.x, np.y, np.z);
+				minValue = std::min(minValue, r);
+				maxValue = std::max(maxValue, r);
+				pixels[y * height + x] = r;
 			}
 		}
 
-		FILE* fp = fopen("testNoisedField.raw", "wb");
-		TS_ASSERT(fp);
-		fwrite(noiseField.Access(Stokes::Vectoriu(0, 0, 0)), noiseField.GetSize(), 1, fp);
-		fclose(fp);
+		TS_ASSERT(SaveAsPGM("testNoise.pgm", width, height, pixels, minValue, maxValue));
+		delete [] pixels;
 	}
 
 	void testFBM()
 	{
-		Stokes::SimpleField fbmField(localToWorld, bound, dimension, arity);
+		float* pixels = new float[width * height];
+		float minValue = 1e6f, maxValue = - 1e6f;
 
-		Stokes::Vectoriu index;
-		for (index.z = 0; index.z < dimension.z; ++ index.z)
+		for (int y = 0; y < height; ++ y)
 		{
-			for (index.y = 0; index.y < dimension.y; ++ index.y)
+			for (int x = 0; x < width; ++ x)
 			{
-				for (index.x = 0; index.x < dimension.x; ++ index.x)
-				{
-					const Stokes::Vectorf localPoint = fbmField.CalculateLocalPointFromIndex(index);
-					fbmField.Access(index)[0] = Stokes::Noiser::FractalBrownianMotion(localPoint, 0.1, 3, 3);
-				}
+				//float z = (float)rand() / (float)RAND_MAX * y;
+				Stokes::Vectorf np(cellWidth * (x + 0.5f), 0.0f, cellHeight * (y + 0.5f));
+				float r = Stokes::Noiser::FractalBrownianMotion(np, 0.225f, 0.725f, 10.5f);
+				minValue = std::min(minValue, r);
+				maxValue = std::max(maxValue, r);
+				pixels[y * height + x] = r;
 			}
 		}
 
-		FILE* fp = fopen("testFBMField.raw", "wb");
-		TS_ASSERT(fp);
-		fwrite(fbmField.Access(Stokes::Vectoriu(0, 0, 0)), fbmField.GetSize(), 1, fp);
-		fclose(fp);
+		TS_ASSERT(SaveAsPGM("testFBM.pgm", width, height, pixels, minValue, maxValue));
+		delete [] pixels;
 	}
 	
 	void testTurbulence()
 	{
-		Stokes::SimpleField turbulenceField(localToWorld, bound, dimension, arity);
+		float* pixels = new float[width * height];
+		float minValue = 1e6f, maxValue = - 1e6f;
 
-		Stokes::Vectoriu index;
-		for (index.z = 0; index.z < dimension.z; ++ index.z)
+		for (int y = 0; y < height; ++ y)
 		{
-			for (index.y = 0; index.y < dimension.y; ++ index.y)
+			for (int x = 0; x < width; ++ x)
 			{
-				for (index.x = 0; index.x < dimension.x; ++ index.x)
-				{
-					const Stokes::Vectorf localPoint = turbulenceField.CalculateLocalPointFromIndex(index);
-					turbulenceField.Access(index)[0] = Stokes::Noiser::Turbulence(localPoint, 8);
-				}
+				//float z = (float)rand() / (float)RAND_MAX * y;
+				Stokes::Vectorf np(cellWidth * (x + 0.5f), cellHeight * (y + 0.5f), 0);
+				float r = Stokes::Noiser::Turbulence(np, 4.0f);
+				minValue = std::min(minValue, r);
+				maxValue = std::max(maxValue, r);
+				pixels[y * height + x] = r;
 			}
 		}
 
-		FILE* fp = fopen("testTurbulenceField.raw", "wb");
-		TS_ASSERT(fp);
-		fwrite(turbulenceField.Access(Stokes::Vectoriu(0, 0, 0)), turbulenceField.GetSize(), 1, fp);
-		fclose(fp);
+		TS_ASSERT(SaveAsPGM("testTurbulence.pgm", width, height, pixels, minValue, maxValue));
+		delete [] pixels;
 	}
 
-public:
+private:
 
-	Stokes::Matrixf localToWorld;
-	Stokes::Bound bound;
-	Stokes::Vectoriu dimension;
-	Stokes::Integer32U arity;
+	int width, height;
+	float x, y;
+	float cellWidth, cellHeight;
+
+	bool SaveAsPGM(const char* path, const int width, const int height, const float* pixels, const float minValue, const float maxValue)
+	{
+		FILE* fp = fopen(path, "w");
+		if (!fp)
+		{
+			return false;
+		}
+		fprintf(fp, "P2\n%d %d\n255\n", width, height);
+
+		const float valueRange = maxValue - minValue;
+
+		for (int y = 0; y < height; ++ y)
+		{
+			for (int x = 0; x < width; ++ x)
+			{
+				float p = pixels[y * height + x];
+				p = (p - minValue) / valueRange;
+				fprintf(fp, "%d ", (int)floorf(p * 255.0f));
+			}
+			fprintf(fp, "\n");
+		}
+		fclose(fp);
+
+		return true;
+	}
 };

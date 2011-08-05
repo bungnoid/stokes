@@ -3,13 +3,13 @@
 
 #include <maya/MObject.h>
 
-#include <Stokes/Core/Emitter.hpp>
+#include <Stokes/Core/NoisedEmitter.hpp>
 
 #include <Stokes/Maya/API.hpp>
 
 ENTER_NAMESPACE_STOKES
 
-class STOKES_MAYA_API MayaObjectEmitter : public Emitter
+class STOKES_MAYA_API MayaObjectEmitter : public NoisedEmitter
 {
 public:
 
