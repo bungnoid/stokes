@@ -2,7 +2,6 @@
 #define STOKES_CORE_FIELD_HPP
 
 #include <Stokes/Core/Bound.hpp>
-#include <Stokes/Core/FileMapping.hpp>
 #include <Stokes/Core/Matrix.hpp>
 #include <Stokes/Core/Vector.hpp>
 

@@ -13,19 +13,20 @@ public:
 	{
 		// Fill dense array with numbers.
 		const Stokes::Matrixf localToWorldMatrix;
-		const Stokes::Bound bound(0, 0, 0, 512, 512, 64);
-		const Stokes::Vectoriu dimension(512, 512, 64);
+		const Stokes::Bound bound(0, 0, 0, 32, 32, 32);
+		const Stokes::Vectoriu dimension(32, 32, 32);
 		const Stokes::Vectori64u dimension64(dimension.x, dimension.y, dimension.z);
 		const Stokes::Integer32U arity = 4;
 		const Stokes::Integer32U pagedSliceCount = 16;
 
-		const Stokes::WideString path(L"testDenseMappedField.dat");
+		const Stokes::WideString path(L"testDenseMappedField.raw");
 
 		mTestDenseMappedField.reset(new Stokes::DenseMappedField(localToWorldMatrix, bound, dimension, arity, pagedSliceCount));
 		TS_ASSERT(mTestDenseMappedField);
 
-		Stokes::FileMappingRef fileMapping = mTestDenseMappedField->GetFileMapping();
-		TS_ASSERT(fileMapping->Open(path, Stokes::FileMapping::MAPPING_MODE_READ_WRITE, mTestDenseMappedField->GetSize()));
+		Stokes::FileRef file = mTestDenseMappedField->GetFile();
+		TS_ASSERT(file->Open(path, Stokes::File::ACCESS_MODE_WRITE));
+		TS_ASSERT(file->Resize(mTestDenseMappedField->GetSize()));
 
 		Stokes::Vectoriu index;
 		for (index.z = 0; index.z < dimension64.z; ++ index.z)
@@ -61,36 +62,6 @@ public:
 
 		// Remove file.
 		_wremove(path.c_str());
-	}
-
-	void testFBM()
-	{
-		const Stokes::Matrixf localToWorldMatrix;
-		const Stokes::Bound bound(0, 0, 0, 256, 256, 256);
-		const Stokes::Vectoriu dimension(256, 256, 256);
-		const Stokes::Integer32U arity = 1;
-		const Stokes::Integer32U pagedSliceCount = 16;
-
-		const Stokes::WideString path(L"testDenseMappedFieldFBM.dat");
-
-		mTestDenseMappedField.reset(new Stokes::DenseMappedField(localToWorldMatrix, bound, dimension, arity, pagedSliceCount));
-		TS_ASSERT(mTestDenseMappedField);
-
-		Stokes::FileMappingRef fileMapping = mTestDenseMappedField->GetFileMapping();
-		TS_ASSERT(fileMapping->Open(path, Stokes::FileMapping::MAPPING_MODE_READ_WRITE, mTestDenseMappedField->GetSize()));
-
-		Stokes::Vectoriu index;
-		for (index.z = 0; index.z < dimension.z; ++ index.z)
-		{
-			for (index.y = 0; index.y < dimension.y; ++ index.y)
-			{
-				for (index.x = 0; index.x < dimension.x; ++ index.x)
-				{
-					const Stokes::Vectorf localPoint = mTestDenseMappedField->CalculateLocalPointFromIndex(index);
-					mTestDenseMappedField->Access(index)[0] = Stokes::Noiser::FractalBrownianMotion(localPoint, 0.5, 4, 4);
-				}
-			}
-		}
 	}
 
 private:

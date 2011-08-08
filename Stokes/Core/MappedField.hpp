@@ -4,6 +4,7 @@
 #include <map>
 
 #include <Stokes/Core/Field.hpp>
+#include <Stokes/Core/File.hpp>
 
 ENTER_NAMESPACE_STOKES
 
@@ -22,7 +23,7 @@ public:
 	MappedField(const Matrixf& localToWorld, const Bound& bound, const Vectoriu& dimension, const Integer32U arity, const StorageMode storageMode, const Integer32U pageCount);
 	virtual ~MappedField();
 
-	const FileMappingRef& GetFileMapping() const;
+	const FileRef& GetFile() const;
 
 	StorageMode GetStorageMode() const;
 
@@ -33,13 +34,15 @@ protected:
 	struct Segement
 	{
 		Segement(const Integer32U theSize = 0, const void* theAddress = NULL) :
+			usedTime(0),
 			size(theSize),
 			address(const_cast<void*>(theAddress))
 		{
 			assert(address);
 		}
-		Integer32U size;
+		
 		Integer64U usedTime;
+		Integer32U size;
 		void*      address;
 	};
 
@@ -47,7 +50,7 @@ protected:
 
 	StorageMode                    mStorageMode;
 	Integer32U                     mPageCount;
-	FileMappingRef                 mFileMapping;
+	FileRef                        mFile;
 	std::map<Integer64U, Segement> mSegements;
 };
 

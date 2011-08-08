@@ -14,7 +14,7 @@ DenseMappedField::~DenseMappedField()
 Float* DenseMappedField::Access(const Vectoriu& index)
 {
 	const Integer32U sliceLength = mDimension.x * mDimension.y;
-	const Integer64U sliceIndex = sliceLength * index.z;
+	const Integer64U sliceIndex = static_cast<const Integer64U>(sliceLength) * index.z;
 	Float* sliceAddress = MappedField::Map(sliceIndex, sliceLength);
 
 	const Integer32U elementIndexInSlice = (mDimension.x * index.y + index.x) * mArity;

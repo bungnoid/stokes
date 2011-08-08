@@ -2,6 +2,7 @@
 #include <maya/MItDependencyNodes.h>
 #include <maya/MLibrary.h>
 
+#include <Stokes/Core/DenseMappedField.hpp>
 #include <Stokes/Core/SimpleField.hpp>
 
 #include <Stokes/Maya/MayaNurbsSurfaceEmitter.hpp>
@@ -55,14 +56,20 @@ int main(int argc, char* argv[])
 
 	Stokes::Integer32U arity = 1;
 
-	Stokes::SimpleFieldRef field(new Stokes::SimpleField(identity, bound, dimension, arity));
+	Stokes::DenseMappedFieldRef field(new Stokes::DenseMappedField(identity, bound, dimension, arity, 256));
+	Stokes::FileRef fieldFile = field->GetFile();
+	if (fieldFile->Open(L"MtoS.raw", Stokes::File::ACCESS_MODE_WRITE))
+	{
+		if (fieldFile->Resize(field->GetSize()))
+		{
+			nurbsSurfaceEmitter->Fill(field);
+		}
+	}
 
-	nurbsSurfaceEmitter->Fill(field);
-
-	FILE* fp = fopen(argv[2], "wb");
-	assert(fp);
-	fwrite(field->Access(Stokes::Vectoriu(0, 0, 0)), field->GetSize(), 1, fp);
-	fclose(fp);
+	//FILE* fp = fopen(argv[2], "wb");
+	//assert(fp);
+	//fwrite(field->Access(Stokes::Vectoriu(0, 0, 0)), field->GetSize(), 1, fp);
+	//fclose(fp);
 
 	MLibrary::cleanup();
 	return EXIT_SUCCESS;

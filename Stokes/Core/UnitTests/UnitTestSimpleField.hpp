@@ -9,7 +9,7 @@ public:
 	{
 		Stokes::Matrixf localToWorld;
 		localToWorld.data[3] = localToWorld.data[7] = localToWorld.data[11] = -5;
-		Stokes::Bound bound(-5, -5, -5, 5, 5, 5);
+		Stokes::Bound bound(0, 0, 0, 10, 10, 10);
 		Stokes::Vectoriu totalDimension(10, 10, 10);
 		Stokes::Integer32 arity = 3;
 
@@ -32,7 +32,6 @@ public:
 					const Stokes::Vectorf worldPoint = mSimpleField->CalculateLocalPointFromIndex(index);
 					TS_ASSERT(mSimpleField->CalculateIndexFromWorldPoint(worldPoint, index2));
 					TS_ASSERT(index == index2);
-					std::cout << index << " | " << worldPoint << " | " << index2 << std::endl;
 				}
 			}
 		}
