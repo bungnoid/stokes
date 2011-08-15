@@ -12,7 +12,7 @@ if(MSVC)
 	add_definitions(-DNT_PLUGIN)
 endif()
 
-add_library(StokesMaya SHARED API.hpp API.cpp MayaObjectEmitter.hpp MayaObjectEmitter.cpp MayaNurbsSurfaceEmitter.hpp MayaNurbsSurfaceEmitter.cpp)
+add_library(StokesMaya SHARED API.hpp API.cpp ObjectEmitter.hpp ObjectEmitter.cpp NurbsCurveEmitter.hpp NurbsCurveEmitter.cpp NurbsSurfaceEmitter.hpp NurbsSurfaceEmitter.cpp)
 target_link_libraries(StokesMaya StokesCore Foundation OpenMaya OpenMayaFX)
 
 if(MSVC)

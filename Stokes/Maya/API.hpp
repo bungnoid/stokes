@@ -13,4 +13,9 @@
 #define STOKES_MAYA_API __attribute__ ((visibility ("default")))
 #endif
 
+#ifndef STOKES_MAYA_NAMESPACE
+#define ENTER_NAMESPACE_STOKES_MAYA namespace Stokes { namespace Maya {
+#define LEAVE_NAMESPACE_STOKES_MAYA } }
+#endif
+
 #endif

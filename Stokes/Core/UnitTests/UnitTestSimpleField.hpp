@@ -9,8 +9,8 @@ public:
 	{
 		Stokes::Matrixf localToWorld;
 		localToWorld.data[3] = localToWorld.data[7] = localToWorld.data[11] = -5;
-		Stokes::Bound bound(0, 0, 0, 10, 10, 10);
-		Stokes::Vectoriu totalDimension(10, 10, 10);
+		Stokes::Bound bound(0, 0, 0, 4096, 2048, 256);
+		Stokes::Vectoriu totalDimension(4096, 2048, 256);
 		Stokes::Integer32 arity = 3;
 
 		mSimpleField.reset(new Stokes::SimpleField(localToWorld, bound, totalDimension, arity));

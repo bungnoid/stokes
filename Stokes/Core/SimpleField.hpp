@@ -12,11 +12,14 @@ public:
 	SimpleField(const Matrixf& localToWorld, const Bound& bound, const Vectoriu& dimension, const Integer32U arity);
 	~SimpleField();
 
+	bool Save(const WideString& path, const bool compress);
+
 	Float* Access(const Vectoriu& index);
 
 private:
 
-	void* mAddress;
+	void** mAddresses;
+	Integer32U mAddressCount;
 };
 
 typedef boost::shared_ptr<SimpleField> SimpleFieldRef;
