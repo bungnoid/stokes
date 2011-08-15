@@ -29,9 +29,19 @@ struct Bound
 		min.y = std::min(min.y, position.y);
 		min.z = std::min(min.z, position.z);
 
-		max.x = std::min(max.x, position.x);
-		max.y = std::min(max.y, position.y);
-		max.z = std::min(max.z, position.z);
+		max.x = std::max(max.x, position.x);
+		max.y = std::max(max.y, position.y);
+		max.z = std::max(max.z, position.z);
+	}
+	void Extend(const Bound& bound)
+	{
+		min.x = std::min(min.x, bound.min.x);
+		min.y = std::min(min.y, bound.min.y);
+		min.z = std::min(min.z, bound.min.z);
+
+		max.x = std::max(max.x, bound.max.x);
+		max.y = std::max(max.y, bound.max.y);
+		max.z = std::max(max.z, bound.max.z);
 	}
 
 	Vectorf Size() const

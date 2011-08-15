@@ -6,6 +6,7 @@
 #include <maya/MFileIO.h>
 #include <maya/MFnNurbsSurface.h>
 #include <maya/MItDependencyNodes.h>
+#include <maya/MMatrix.h>
 #include <maya/MPlug.h>
 #include <maya/MPoint.h>
 
@@ -20,6 +21,7 @@ ENTER_NAMESPACE_STOKES_MAYA
 NurbsSurfaceEmitter::NurbsSurfaceEmitter(const MObject& object) :
 	ObjectEmitter(object)
 {
+	assert(mObject.hasFn(MFn::kNurbsSurface));
 }
 
 NurbsSurfaceEmitter::~NurbsSurfaceEmitter()
@@ -28,8 +30,6 @@ NurbsSurfaceEmitter::~NurbsSurfaceEmitter()
 
 void NurbsSurfaceEmitter::CalculateWorldBound(Bound& bound) const
 {
-	assert(mObject.hasFn(MFn::kNurbsSurface));
-
 	MFnNurbsSurface surface(mObject);
 	const MBoundingBox& surfaceBound = surface.boundingBox();
 	const MPoint& min = surfaceBound.min();
@@ -47,8 +47,6 @@ void NurbsSurfaceEmitter::Fill(const FieldRef& field)
 {
 	assert(mObject.hasFn(MFn::kNurbsSurface));
 	assert(field);
-
-	const Matrixf& localToWorld = field->GetLocalToWorld();
 
 	// Process Maya DG node.
 	//
@@ -102,7 +100,7 @@ void NurbsSurfaceEmitter::Fill(const FieldRef& field)
 			Double v = Random::NextAsDouble() * valueVRange + minValueV;
 			Vectorf noisedPoint(static_cast<Float>(u) * mScale.x - mOffset.x, Random::NextAsFloat() * mScale.y - mOffset.y, static_cast<Float>(v) * mScale.z - mOffset.z);
 
-			surface.getDerivativesAtParm(u, v, p, du, dv, MSpace::kObject);
+			surface.getDerivativesAtParm(u, v, p, du, dv, MSpace::kWorld);
 			omp_unset_lock(&lock);
 
 			// Displace the sample along normal.
@@ -113,8 +111,7 @@ void NurbsSurfaceEmitter::Fill(const FieldRef& field)
 			Stokes::Float displacement = Stokes::Noiser::FractalBrownianMotion(noisedPoint, mDisplacedH, mDisplacedLacunarity, mDisplacedOctave) * mDisplacedAmplitude;
 			n *= displacement;
 			p += n;
-			Vectorf localPoint(static_cast<Float>(p.x), static_cast<Float>(p.y), static_cast<Float>(p.z));
-			Vectorf worldPoint = Stokes::Transform(localToWorld, localPoint);
+			Vectorf worldPoint(p.x, p.y, p.z);
 
 			// Fill the density.
 			Vectoriu index;

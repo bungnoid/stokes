@@ -13,7 +13,7 @@ class STOKES_MAYA_API ObjectEmitter : public NoisedEmitter
 {
 public:
 
-	ObjectEmitter(const MObject& mayaObject);
+	ObjectEmitter(const MObject& object);
 	virtual ~ObjectEmitter();
 
 	virtual void CalculateWorldBound(Bound& bound) const = 0;
